@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1029215654580",
+    "project_id": "sodeproject",
+    "storage_bucket": "sodeproject.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1029215654580:android:150cfa730d9b1139ee3de1",
+        "android_client_info": {
+          "package_name": "com.example.sodeproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1029215654580-qmt96v6ulkc4g3f7imoa0bunbvmr62hr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhN0mBR9anCNYPjJUOUc8UAIHhFIphAJU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1029215654580-qmt96v6ulkc4g3f7imoa0bunbvmr62hr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
