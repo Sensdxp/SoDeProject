@@ -1,7 +1,11 @@
 package com.example.sodeproject.feature_navigation
 
 
+import android.content.Context
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -12,38 +16,14 @@ import com.example.sodeproject.feature_scanner.presentation.ScannerScreen
 import com.example.sodeproject.feature_score.presentation.ScoreScreen
 import com.example.sodeproject.feature_settings.presentation.SettingsScreen
 import com.example.sodeproject.feature_shop.presentation.ShopScreen
-/*
-@Composable
-fun Navigation(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = "SignIn_Screen") {
-        composable("SignIn_Screen"){
-            SignInScreen(navController)
-        }
-        composable("SignUp_Screen"){
-            SignUpScreen(navController)
-        }
-        composable("Score_Screen"){
-            ScoreScreen()
-        }
-        composable("Scanner_Screen"){
-            ScannerScreen()
-        }
-        composable("Shop_Screen"){
-            ShopScreen()
-        }
-        composable("Settings_Screen"){
-            SettingsScreen()
-        }
-    }
-}
-*/
+
 @Composable
 fun NavigationGraph(
-    navController: NavHostController = rememberNavController(),
+    navController: NavHostController
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screens.SignUpScreen.route
+        startDestination = Screens.SignInScreen.route,
     ){
         composable(route = Screens.SignInScreen.route){
             SignInScreen(navController)
@@ -65,6 +45,7 @@ fun NavigationGraph(
         }
     }
 }
+
 
 
 

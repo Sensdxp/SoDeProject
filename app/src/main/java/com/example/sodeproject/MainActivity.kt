@@ -1,13 +1,25 @@
 package com.example.sodeproject
 
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Scaffold
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.example.sodeproject.feature_navigation.BottomNavigationBar
 import com.example.sodeproject.feature_navigation.NavigationGraph
+import com.example.sodeproject.feature_navigation.components.BottomNavItem
 
 
 import com.example.sodeproject.ui.theme.SoDeProjectTheme
@@ -16,18 +28,14 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    //private val viewModel: SignInViewModel by viewModels()
 
-    //@OptIn(ExperimentalMaterial3Api::class)
+    //@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            NavigationGraph()
-            /*
-            val navController = rememberNavController()
-            var context1 = LocalContext.current
+            SoDeProjectTheme {
+                val navController = rememberNavController()
 
-            if(viewModel.getSignInSuccess()){
                 Scaffold(
                     bottomBar = {
                         BottomNavigationBar(
@@ -40,17 +48,17 @@ class MainActivity : ComponentActivity() {
                                 BottomNavItem(
                                     name = "Scanner",
                                     route = "Scanner_Screen",
-                                    icon = Icons.Default.Settings
+                                    icon = Icons.Default.Check
                                 ),
                                 BottomNavItem(
                                     name = "Score",
                                     route = "Score_Screen",
-                                    icon = Icons.Default.Settings
+                                    icon = Icons.Default.Star
                                 ),
                                 BottomNavItem(
                                     name = "Settings",
                                     route = "Settings_Screen",
-                                    icon = Icons.Default.Settings
+                                    icon = Icons.Default.ShoppingCart
                                 )
                             ),
                             navController = navController,
@@ -59,11 +67,12 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     }
-                ) {
-                    Navigation(navController = navController)
-                }
+                ){ innerPadding ->
+                    Box(Modifier.padding(innerPadding)) {
+                        NavigationGraph(navController = navController)
+                    }
+                } 
             }
-            */
         }
     }
 }
