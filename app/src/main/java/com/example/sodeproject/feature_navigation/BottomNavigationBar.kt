@@ -18,13 +18,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Star
 
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.sodeproject.feature_navigation.components.BottomNavItem
 
 @Composable
-fun BottomNavigationBar(
+fun BottomNavigationBarItem(
     items: List<BottomNavItem>,
     navController: NavController,
     modifier: Modifier = Modifier,
@@ -71,5 +76,41 @@ fun BottomNavigationBar(
                 }
             )
         }
+    }
+}
+
+@Composable
+fun BottomNavigationBar(
+    navController: NavController,
+){
+    Box(modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.BottomCenter) {
+        BottomNavigationBarItem(items = listOf(
+            BottomNavItem(
+                name = "Shop",
+                route = "Shop_Screen",
+                icon = Icons.Default.Settings
+            ),
+            BottomNavItem(
+                name = "Scanner",
+                route = "Scanner_Screen",
+                icon = Icons.Default.Check
+            ),
+            BottomNavItem(
+                name = "Score",
+                route = "Score_Screen",
+                icon = Icons.Default.Star
+            ),
+            BottomNavItem(
+                name = "Settings",
+                route = "Settings_Screen",
+                icon = Icons.Default.ShoppingCart
+            )
+        ),
+            navController = navController,
+            onItemClick = {
+                navController.navigate(it.route)
+            }
+        )
     }
 }

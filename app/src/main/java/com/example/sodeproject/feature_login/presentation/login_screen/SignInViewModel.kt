@@ -1,5 +1,6 @@
 package com.example.sodeproject.feature_login.presentation.login_screen
 
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sodeproject.feature_login.data.AuthRepository
@@ -15,8 +16,6 @@ class SignInViewModel @Inject constructor(
     private val repository: AuthRepository
 ): ViewModel() {
 
-    //private var isSignInSuccess: Boolean = false
-
     val _signInState = Channel<SignInState>()
     val signInState = _signInState.receiveAsFlow()
 
@@ -24,7 +23,6 @@ class SignInViewModel @Inject constructor(
         repository.loginUser(email,password).collect { result ->
             when (result){
                 is Resource.Success ->{
-                    //isSignInSuccess = true
                     _signInState.send(SignInState(isSuccess = "Sign In Success "))
                 }
                 is Resource.Loading ->{
@@ -36,10 +34,4 @@ class SignInViewModel @Inject constructor(
             }
         }
     }
-    /*
-    fun getSignInSuccess(): Boolean {
-        return isSignInSuccess
-    }
-     */
-
 }

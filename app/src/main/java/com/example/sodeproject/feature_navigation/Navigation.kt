@@ -32,16 +32,16 @@ fun NavigationGraph(
             SignUpScreen(navController)
         }
         composable(route = Screens.ScoreScreen.route){
-            ScoreScreen()
+            ScoreScreen(navController)
         }
         composable(route = Screens.ScannerScreen.route){
-            ScannerScreen()
+            ScannerScreen(navController)
         }
         composable(route = Screens.ShopScreen.route){
-            ShopScreen()
+            ShopScreen(navController)
         }
         composable(route = Screens.SettingsScreen.route){
-            SettingsScreen()
+            SettingsScreen(navController)
         }
     }
 }
