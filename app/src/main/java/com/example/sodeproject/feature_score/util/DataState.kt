@@ -8,8 +8,4 @@ sealed class DataState{
     object Loading:DataState()
     object Empty:DataState()
 }
-/*
- operator fun getValue(nothing: Nothing?, property: KProperty<*>): Any {
 
-    }
- */
