@@ -29,11 +29,10 @@ fun ScoreScreen(
                 if (scoreState.value?.isLoading == true) {
                     CircularProgressIndicator()
                 } else {
-                    if (scoreState.value?.isSuccess == true) {
-                        Text(text = "Your score is: ${UserSession.score}")
-                    }
                     if (scoreState.value?.isError == true) {
                         Text(text = "Error downloading score: ${scoreState.value?.isError}")
+                    }else{
+                        Text(text = "Your score is: ${UserSession.score}")
                     }
                 }
 

@@ -26,7 +26,6 @@ class ScoreViewModel @Inject constructor(
         UserSession.uid?.let { getScore(it) }
     }
 
-
     fun getScore(userId: String) = viewModelScope.launch {
         repository.getScore(userId).collect { result ->
             when (result) {

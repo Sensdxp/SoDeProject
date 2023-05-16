@@ -14,6 +14,10 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,8 +25,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -37,17 +43,26 @@ import androidx.navigation.NavController
 import com.example.sodeproject.feature_login.data.UserSession
 import com.example.sodeproject.feature_navigation.BottomNavigationBar
 import com.example.sodeproject.feature_scanner.data.QrCodeAnalyzer
+import com.example.sodeproject.feature_scanner.data.ShopArticle
+import com.example.sodeproject.feature_scanner.data.ShopArticleSession
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.qrcode.QRCodeWriter
 import kotlinx.coroutines.launch
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.collectAsState
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun ScannerScreen(
     navController: NavController,
-    scannerViewModel: ScannerViewModel = viewModel()
-
+    scannerViewModel: ScannerViewModel = hiltViewModel()
 ) {
+    val scannerState = scannerViewModel.scannerState.collectAsState(initial = null)
+    // QR Code Generator
     if(UserSession.seller == false || UserSession.seller == null) {
         Row (
             modifier = Modifier.fillMaxSize(),
@@ -82,77 +97,36 @@ fun ScannerScreen(
                             }
                         setImageBitmap(bitmap)
                     }
-                }, modifier = Modifier.width(300.dp).height(300.dp)
+                }, modifier = Modifier
+                    .width(300.dp)
+                    .height(300.dp)
 
             )
         }
+    // QR Code Scanner
     }else{
-        val context = LocalContext.current
-        val lifecycleOwner = LocalLifecycleOwner.current
-        val scope = rememberCoroutineScope()
-        val cameraProviderFuture = remember {
-            ProcessCameraProvider.getInstance(context)
-        }
-
-        val launcher = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.RequestPermission(),
-            onResult = { granted ->
-                scannerViewModel.hasCameraPermission.value = granted
-            })
-        LaunchedEffect(key1 = true) {
-            if (!scannerViewModel.hasCameraPermission.value) {
-                launcher.launch(Manifest.permission.CAMERA)
-            }
-        }
-
-        Column(
-            modifier = Modifier.fillMaxSize()
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
-            AndroidView(
-                factory = { context ->
-                    val previewView = PreviewView(context)
-                    val preview = Preview.Builder().build()
-                    val selector = CameraSelector.Builder()
-                        .requireLensFacing(CameraSelector.LENS_FACING_BACK)
-                        .build()
-                    preview.setSurfaceProvider(previewView.surfaceProvider)
-                    val imageAnalysis = ImageAnalysis.Builder()
-                        .setTargetResolution(Size(previewView.width, previewView.height))
-                        .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                        .build()
-                    imageAnalysis.setAnalyzer(
-                        ContextCompat.getMainExecutor(context),
-                        QrCodeAnalyzer { result ->
-                            scannerViewModel.code.value = result
+            if(scannerState.value?.isLoading == true){
+                CircularProgressIndicator()
+            } else {
+                if(scannerState.value?.isError == true){
+                    Text(text = "Error downloading articles: ${scannerState.value?.isError}")
+                }else{
+                    Column {
+                        ShopArticleSession.articleList.forEach { item ->
+                            SelectableItem(item)
                         }
-                    )
-                    try {
-                        cameraProviderFuture.get().bindToLifecycle(
-                            lifecycleOwner,
-                            selector,
-                            preview,
-                            imageAnalysis
-                        )
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                    previewView
-                }, modifier = Modifier.weight(1f)
-            )
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 10.dp),
-            horizontalArrangement = Arrangement.Center
-        ) {
-
-            LaunchedEffect(key1 = scannerViewModel.code.value != "") {
-                scope.launch {
-                    if (!scannerViewModel.code.value.equals("")) {
-                        val success = scannerViewModel.code.value
-                        Toast.makeText(context, "Code: ${success}", Toast.LENGTH_LONG).show()
+                        Button(
+                            onClick = {
+                                navController.navigate("QRScanner_Screen")
+                            },
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        ) {
+                            Text(text = "Bestätigen")
+                        }
                     }
                 }
             }
@@ -160,3 +134,34 @@ fun ScannerScreen(
     }
     BottomNavigationBar(navController = navController)
 }
+
+@Composable
+fun SelectableItem(shopArticle: ShopArticle) {
+    var itemCount =  remember { mutableStateOf(0) }
+
+
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(text = shopArticle.description, modifier = Modifier.weight(1f))
+        IconButton(
+            onClick = {
+                itemCount.value--
+                // Subtract score points from the total volume
+                ShopArticleSession.addPoints = ShopArticleSession.addPoints - shopArticle.scorePoints
+                      },
+            enabled = itemCount.value > 0
+        ) {
+            Icon(Icons.Filled.Email, contentDescription = "Minus")
+        }
+        Text(text = itemCount.value.toString())
+        IconButton(
+            onClick = {
+                itemCount.value++
+                // Add score points from the total volume
+                ShopArticleSession.addPoints = ShopArticleSession.addPoints + shopArticle.scorePoints
+            }
+        ) {
+            Icon(Icons.Filled.Add, contentDescription = "Plus")
+        }
+    }
+}
+
