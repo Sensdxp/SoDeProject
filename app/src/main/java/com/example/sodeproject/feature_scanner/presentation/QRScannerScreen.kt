@@ -26,16 +26,18 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.sodeproject.feature_scanner.data.QrCodeAnalyzer
 import kotlinx.coroutines.launch
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sodeproject.feature_navigation.BottomNavigationBar
+import com.example.sodeproject.feature_scanner.data.ShopArticleSession
 
 @Composable
 fun QRScannerScreen(
     navController: NavController,
-    viewModel: QRScannerViewModel = viewModel()
+    viewModel: QRScannerViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -74,8 +76,18 @@ fun QRScannerScreen(
                     ContextCompat.getMainExecutor(context),
                     QrCodeAnalyzer { result ->
                         viewModel.code.value = result
-                        navController.navigate("Scanner_Screen")
-                        TODO()
+                        val (userID, offerID) = splitString(result)
+                        // Speichern der Ergebnisse in separaten Strings
+                        val userIDString: String = userID
+                        val offerIDString: String = offerID
+                        if(offerIDString.isNotEmpty()){
+                            viewModel.updateScore(ShopArticleSession.addPoints,userIDString)
+                            ShopArticleSession.offerId = offerIDString
+                            navController.navigate("Offer_Screen")
+                        }else{
+                            viewModel.updateScore(ShopArticleSession.addPoints,userIDString)
+                            navController.navigate("Scanner_Screen")
+                        }
                     }
                 )
                 try {
@@ -109,4 +121,11 @@ fun QRScannerScreen(
         }
     }
     BottomNavigationBar(navController = navController)
+}
+
+fun splitString(inputString: String): Pair<String, String> {
+    val parts = inputString.split("*")
+    val userID = parts[0]
+    val offerID = if (parts.size > 1) parts[1] else ""
+    return Pair(userID, offerID)
 }

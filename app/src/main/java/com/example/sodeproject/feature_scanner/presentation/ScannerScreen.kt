@@ -125,7 +125,7 @@ fun ScannerScreen(
                             },
                             modifier = Modifier.align(Alignment.CenterHorizontally)
                         ) {
-                            Text(text = "Bestätigen")
+                            Text(text = "Confirm")
                         }
                     }
                 }

@@ -8,6 +8,7 @@ import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.tasks.await
 
 import javax.inject.Inject
 
@@ -49,6 +50,78 @@ class ScannerRepositoryImpl @Inject constructor(
             }
 
             emit(Resource.Success(1))
+        }.catch {
+            emit(Resource.Error(it.message.toString()))
+        }
+    }
+
+    override fun updateScore(addScore: Int, userId: String): Flow<Resource<Int>> {
+        return flow {
+            emit(Resource.Loading())
+
+            var score = -1
+            val reference = FirebaseDatabase.getInstance("https://sodeproject-default-rtdb.europe-west1.firebasedatabase.app").getReference("users/$userId/userScore")
+
+            reference.addValueEventListener( object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    score = dataSnapshot.getValue(Int::class.java)!!
+
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    println("Error reading scores: ${error.message}")
+                }
+            }
+            )
+
+            while (score == -1) {
+                kotlinx.coroutines.delay(10)
+            }
+            val updatedScore = score + addScore
+            /*
+            if(updatedScore < 0){
+                emit(Resource.Error("User dose not have enough points"))
+                return@flow
+            }
+
+             */
+            reference.setValue(updatedScore).await()
+
+            emit(Resource.Success(1))
+        }.catch {
+            emit(Resource.Error(it.message.toString()))
+        }
+    }
+
+    override fun getOffer(userId: String, offerId: String): Flow<Resource<Int>> {
+        return flow {
+            emit(Resource.Loading())
+            ShopArticleSession.offer = ""
+            var finished: Boolean = false
+            var shopOfferId: String = ""
+            var offer: String = ""
+            val reference = FirebaseDatabase.getInstance("https://sodeproject-default-rtdb.europe-west1.firebasedatabase.app").getReference("shops/$userId")
+            reference.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    offer = dataSnapshot.child("offer").value.toString()
+                    shopOfferId = dataSnapshot.child("offerId").value.toString()
+                    finished = true
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    println("Fehler beim Lesen des Scores: ${error.message}")
+                }
+            })
+            while (finished == false) {
+                kotlinx.coroutines.delay(10)
+            }
+
+            if(offerId == shopOfferId){
+                ShopArticleSession.offer = offer
+                emit(Resource.Success(1))
+            }else{
+                emit(Resource.Error("Customer has used an invalid code"))
+            }
         }.catch {
             emit(Resource.Error(it.message.toString()))
         }

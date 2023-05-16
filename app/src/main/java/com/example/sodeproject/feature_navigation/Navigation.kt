@@ -37,6 +37,9 @@ fun NavigationGraph(
             composable(route = Screens.QRScannerScreen.route){
                 QRScannerScreen(navController)
             }
+                composable(route = Screens.OfferScreen.route){
+                    QRScannerScreen(navController)
+                }
         composable(route = Screens.ShopScreen.route){
             ShopScreen(navController)
         }
