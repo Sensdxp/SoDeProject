@@ -20,9 +20,9 @@ class OfferViewModel @Inject constructor(
     val offerState = _offerState.receiveAsFlow()
 
     init {
-        UserSession.uid?.let { getOffer(it,ShopArticleSession.offerId) }
+        checkOfferScore(ShopArticleSession.customerId,ShopArticleSession.addPoints,ShopArticleSession.shopId,ShopArticleSession.offerId)
     }
-
+    /*
     fun getOffer(userId: String, offerId: String) = viewModelScope.launch {
         repository.getOffer(userId, offerId).collect() { result ->
             when (result) {
@@ -36,6 +36,42 @@ class OfferViewModel @Inject constructor(
 
                 is Resource.Error -> {
                     _offerState.send(OfferState(isError = true))
+                }
+            }
+        }
+    }
+
+     */
+
+    fun checkOfferScore(customerId: String, addScore: Int, shopId: String, offerId: String) = viewModelScope.launch {
+        repository.checkOfferScore(customerId,addScore,shopId,offerId).collect() { result ->
+            when (result) {
+                is Resource.Success -> {
+                    _offerState.send(OfferState(isSuccess = true))
+                }
+
+                is Resource.Loading -> {
+                    _offerState.send(OfferState(isLoading = true))
+                }
+
+                is Resource.Error -> {
+                    _offerState.send(OfferState(isError = true))
+                }
+            }
+        }
+    }
+
+    fun updateScore(addScore: Int, userId: String) = viewModelScope.launch {
+        repository.updateScore(addScore,userId).collect(){result ->
+            when (result) {
+                is Resource.Success -> {
+
+                }
+                is Resource.Loading -> {
+
+                }
+                is Resource.Error -> {
+
                 }
             }
         }

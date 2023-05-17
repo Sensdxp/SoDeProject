@@ -27,11 +27,12 @@ class ShopRepositoryImpl @Inject constructor(
                         val id = shopSnapshot.child("id").getValue(String::class.java) ?: ""
                         val logo = shopSnapshot.child("logo").getValue(String::class.java) ?: ""
                         val name = shopSnapshot.child("name").getValue(String::class.java) ?: ""
-                        val offer = shopSnapshot.child("offer").getValue(String::class.java) ?: ""
-                        val offerId = shopSnapshot.child("offerId").getValue(String::class.java) ?: ""
+                        val offer = shopSnapshot.child("offer/offerDescription").getValue(String::class.java) ?: ""
+                        val offerId = shopSnapshot.child("offer/offerId").getValue(String::class.java) ?: ""
+                        val offerCost = shopSnapshot.child("offer/offerCost").getValue(Int::class.java) ?: 0
                         val shopDescription = shopSnapshot.child("shopDescription").getValue(String::class.java) ?: ""
 
-                        val shop = Shop(id, logo, name, offer, offerId, shopDescription)
+                        val shop = Shop(id, logo, name, offer, offerId, offerCost, shopDescription)
                         shopList.add(shop)
                     }
                     ShopSession.shoplist = shopList

@@ -92,11 +92,12 @@ class ScannerRepositoryImpl @Inject constructor(
             emit(Resource.Error(it.message.toString()))
         }
     }
-
+    /*
     override fun getOffer(userId: String, offerId: String): Flow<Resource<Int>> {
         return flow {
             emit(Resource.Loading())
             ShopArticleSession.offer = ""
+
             var finished: Boolean = false
             var shopOfferId: String = ""
             var offer: String = ""
@@ -119,6 +120,68 @@ class ScannerRepositoryImpl @Inject constructor(
             if(offerId == shopOfferId){
                 ShopArticleSession.offer = offer
                 emit(Resource.Success(1))
+            }else{
+                emit(Resource.Error("Customer has used an invalid code"))
+            }
+        }.catch {
+            emit(Resource.Error(it.message.toString()))
+        }
+    }
+
+     */
+
+    override fun checkOfferScore(customerId: String, addScore: Int, shopId: String, offerId: String): Flow<Resource<Int>> {
+        return flow {
+            emit(Resource.Loading())
+            ShopArticleSession.offer = ""
+            ShopArticleSession.offerCost = 0
+            var finishedOffer: Boolean = false
+            var finishedScore: Boolean = false
+            var shopOfferId: String = ""
+            var offer: String = ""
+            var offerCost: Int = 0
+            var score: Int = 0
+
+
+
+            val referenceOffer = FirebaseDatabase.getInstance("https://sodeproject-default-rtdb.europe-west1.firebasedatabase.app").getReference("shops/$shopId/offer")
+            referenceOffer.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    offer = dataSnapshot.child("offerDescription").value.toString()
+                    shopOfferId = dataSnapshot.child("offerId").value.toString()
+                    offerCost = dataSnapshot.child("offerCost").getValue(Int::class.java) ?: 0
+                    finishedOffer = true
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    println("Fehler beim Lesen des Scores: ${error.message}")
+                }
+            })
+
+            val referenceScore = FirebaseDatabase.getInstance("https://sodeproject-default-rtdb.europe-west1.firebasedatabase.app").getReference("users/$customerId/userScore")
+            referenceScore.addValueEventListener( object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    score = dataSnapshot.getValue(Int::class.java)!!
+                    finishedScore = true
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    println("Fehler beim Lesen des Scores: ${error.message}")
+                }
+            }
+            )
+
+            while (finishedOffer == false || finishedScore == false) {
+                kotlinx.coroutines.delay(10)
+            }
+
+            var newScore = score + addScore - offerCost
+            if(offerId == shopOfferId && newScore >= 0){
+                ShopArticleSession.offer = offer
+                ShopArticleSession.offerCost = offerCost
+                emit(Resource.Success(1))
+            }else if(newScore < 0){
+                emit(Resource.Error("Customer has not enough points for the used code!"))
             }else{
                 emit(Resource.Error("Customer has used an invalid code"))
             }

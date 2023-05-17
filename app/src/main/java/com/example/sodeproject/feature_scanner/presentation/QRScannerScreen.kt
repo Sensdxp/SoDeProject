@@ -31,6 +31,7 @@ import androidx.navigation.NavController
 import com.example.sodeproject.feature_scanner.data.QrCodeAnalyzer
 import kotlinx.coroutines.launch
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.sodeproject.feature_login.data.UserSession
 import com.example.sodeproject.feature_navigation.BottomNavigationBar
 import com.example.sodeproject.feature_scanner.data.ShopArticleSession
 
@@ -81,8 +82,9 @@ fun QRScannerScreen(
                         val userIDString: String = userID
                         val offerIDString: String = offerID
                         if(offerIDString.isNotEmpty()){
-                            viewModel.updateScore(ShopArticleSession.addPoints,userIDString)
                             ShopArticleSession.offerId = offerIDString
+                            ShopArticleSession.shopId = UserSession.uid.toString()
+                            ShopArticleSession.customerId = userIDString
                             navController.navigate("Offer_Screen")
                         }else{
                             viewModel.updateScore(ShopArticleSession.addPoints,userIDString)

@@ -42,8 +42,10 @@ fun OfferScreen(
                 Text(text = ShopArticleSession.offer)
                 Button(
                     onClick = {
-                        TODO()// Ziehe die Score Punkte vom User ab
+                        var addScore = ShopArticleSession.addPoints - ShopArticleSession.offerCost
+                        offerViewModel.updateScore(addScore, ShopArticleSession.customerId)
                         navController.navigate("Scanner_Screen")
+                        ShopArticleSession.customerId = ""
                     },
                     modifier = Modifier.align(Alignment.Center)
                 ) {

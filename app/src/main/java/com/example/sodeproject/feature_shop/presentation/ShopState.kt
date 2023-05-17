@@ -9,5 +9,5 @@ data class ShopState (
 )
 
 object ActiveInfoShop {
-    var shop: Shop = Shop("", "", "", "", "", "")
+    var shop: Shop = Shop("", "", "", "", "", 0,"")
 }

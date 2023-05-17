@@ -10,5 +10,6 @@ data class Shop(
     val name: String = "",
     val offer: String = "",
     val offerId: String = "",
+    val offerCost: Int = 0,
     val shopDescription: String = ""
 )

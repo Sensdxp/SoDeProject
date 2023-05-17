@@ -37,9 +37,11 @@ fun ShopInfoScreen(
             Spacer(modifier = Modifier.height(16.dp))
             Text(text = ActiveInfoShop.shop.shopDescription)
             Spacer(modifier = Modifier.height(16.dp))
-            Text(text = "Angebot")
+            Text(text = "Offer:")
             Spacer(modifier = Modifier.height(16.dp))
-            Text(text = "offer")
+            Text(text = ActiveInfoShop.shop.offer)
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(text = "Price: ${ActiveInfoShop.shop.offerCost} Points")
             Row (
                 modifier = Modifier.fillMaxSize(),
                 horizontalArrangement = Arrangement.Center,
