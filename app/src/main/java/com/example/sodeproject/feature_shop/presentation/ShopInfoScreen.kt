@@ -55,7 +55,7 @@ fun ShopInfoScreen(
                                 it[EncodeHintType.MARGIN] = 1
                             }
                             val bits = QRCodeWriter().encode(
-                                UserSession.uid + ActiveInfoShop.shop.offerId,
+                                UserSession.uid + "*" + ActiveInfoShop.shop.offerId,
                                 BarcodeFormat.QR_CODE,
                                 size,
                                 size,

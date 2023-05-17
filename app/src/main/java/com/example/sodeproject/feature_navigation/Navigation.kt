@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.sodeproject.feature_login.presentation.login_screen.SignInScreen
 import com.example.sodeproject.feature_login.presentation.signup_screen.SignUpScreen
+import com.example.sodeproject.feature_scanner.presentation.OfferScreen
 import com.example.sodeproject.feature_scanner.presentation.QRScannerScreen
 import com.example.sodeproject.feature_scanner.presentation.ScannerScreen
 import com.example.sodeproject.feature_score.presentation.ScoreScreen
@@ -38,7 +39,7 @@ fun NavigationGraph(
                 QRScannerScreen(navController)
             }
                 composable(route = Screens.OfferScreen.route){
-                    QRScannerScreen(navController)
+                    OfferScreen(navController)
                 }
         composable(route = Screens.ShopScreen.route){
             ShopScreen(navController)

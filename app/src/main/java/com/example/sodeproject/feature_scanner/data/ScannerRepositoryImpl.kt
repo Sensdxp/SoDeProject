@@ -147,8 +147,8 @@ class ScannerRepositoryImpl @Inject constructor(
             val referenceOffer = FirebaseDatabase.getInstance("https://sodeproject-default-rtdb.europe-west1.firebasedatabase.app").getReference("shops/$shopId/offer")
             referenceOffer.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    offer = dataSnapshot.child("offerDescription").value.toString()
-                    shopOfferId = dataSnapshot.child("offerId").value.toString()
+                    offer = dataSnapshot.child("offerDescription").getValue(String::class.java) ?: ""
+                    shopOfferId = dataSnapshot.child("offerId").getValue(String::class.java) ?: ""
                     offerCost = dataSnapshot.child("offerCost").getValue(Int::class.java) ?: 0
                     finishedOffer = true
                 }

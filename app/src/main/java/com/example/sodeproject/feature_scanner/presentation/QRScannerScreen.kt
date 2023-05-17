@@ -81,6 +81,7 @@ fun QRScannerScreen(
                         // Speichern der Ergebnisse in separaten Strings
                         val userIDString: String = userID
                         val offerIDString: String = offerID
+
                         if(offerIDString.isNotEmpty()){
                             ShopArticleSession.offerId = offerIDString
                             ShopArticleSession.shopId = UserSession.uid.toString()
