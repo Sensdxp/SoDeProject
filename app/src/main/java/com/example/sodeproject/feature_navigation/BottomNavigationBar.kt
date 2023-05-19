@@ -21,6 +21,8 @@ import androidx.compose.material.icons.filled.Star
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.sodeproject.feature_navigation.components.BottomNavItem
+import com.example.sodeproject.ui.theme.GrayLight
+import com.example.sodeproject.ui.theme.GreenMain
 
 @Composable
 fun BottomNavigationBarItem(
@@ -32,7 +34,7 @@ fun BottomNavigationBarItem(
     val backStackEntry = navController.currentBackStackEntryAsState()
     BottomNavigation(
         modifier = modifier,
-        backgroundColor = Color.Black,
+        backgroundColor = Color.White,
         elevation = 5.dp
     ) {
         items.forEach { item ->
@@ -40,8 +42,8 @@ fun BottomNavigationBarItem(
             BottomNavigationItem(
                 selected = selected,
                 onClick = { onItemClick(item) },
-                selectedContentColor = Color.White,
-                unselectedContentColor = Color.Gray,
+                selectedContentColor = GreenMain,
+                unselectedContentColor = GrayLight,
                 icon = {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         if(item.badgeCount > 0){
@@ -83,7 +85,7 @@ fun BottomNavigationBar(
             BottomNavItem(
                 name = "Shop",
                 route = "Shop_Screen",
-                icon = Icons.Default.Settings
+                icon = Icons.Default.ShoppingCart
             ),
             BottomNavItem(
                 name = "Scanner",
@@ -98,7 +100,7 @@ fun BottomNavigationBar(
             BottomNavItem(
                 name = "Settings",
                 route = "Settings_Screen",
-                icon = Icons.Default.ShoppingCart
+                icon = Icons.Default.Settings
             )
         ),
             navController = navController,
