@@ -35,7 +35,7 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun registerUser(email: String, password: String): Flow<Resource<AuthResult>> {
+    override fun registerUser(userName: String,email: String, password: String): Flow<Resource<AuthResult>> {
         return flow {
             emit(Resource.Loading())
             //Create User Account
@@ -45,7 +45,8 @@ class AuthRepositoryImpl @Inject constructor(
             val user = User(uid, 0, false)
             val reference = FirebaseDatabase.getInstance("https://sodeproject-default-rtdb.europe-west1.firebasedatabase.app").getReference("users/$uid")
             reference.setValue(user).await()
-
+            val referenceUsername = FirebaseDatabase.getInstance("https://sodeproject-default-rtdb.europe-west1.firebasedatabase.app").getReference("users/$userName")
+            referenceUsername.setValue(userName).await()
 
             emit(Resource.Success(result))
         }.catch {

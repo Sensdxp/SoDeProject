@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.Star
 
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.sodeproject.feature_login.data.UserSession
 import com.example.sodeproject.feature_navigation.components.BottomNavItem
 import com.example.sodeproject.ui.theme.GrayLight
 import com.example.sodeproject.ui.theme.GreenMain
@@ -88,12 +89,12 @@ fun BottomNavigationBar(
                 icon = Icons.Default.ShoppingCart
             ),
             BottomNavItem(
-                name = "Scanner",
+                name = if(UserSession.seller == true) {"Scanner"} else "Barcode",
                 route = "Scanner_Screen",
                 icon = Icons.Default.Check
             ),
             BottomNavItem(
-                name = "Score",
+                name = if(UserSession.seller == true) {"Stats"} else "Score",
                 route = "Score_Screen",
                 icon = Icons.Default.Star
             ),
