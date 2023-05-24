@@ -51,8 +51,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import com.example.sodeproject.R
+import com.example.sodeproject.feature_score.data.ChartSession
 import com.example.sodeproject.ui.theme.GreenDark
 import com.example.sodeproject.ui.theme.GreenLight
+import java.text.DecimalFormat
 
 
 @Composable
@@ -61,6 +63,7 @@ fun ScoreScreen(
     viewModel: ScoreViewModel = hiltViewModel()
     ) {
     val scoreState = viewModel.scoreState.collectAsState(initial = null)
+    val statsState = viewModel.statsState.collectAsState(initial = null)
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -78,11 +81,20 @@ fun ScoreScreen(
                 }
             }
         }else{
-            StoreScreen()
+            if (scoreState.value?.isLoading == true) {
+                CircularProgressIndicator()
+            } else {
+                if (scoreState.value?.isError == true) {
+                    Text(text = "Error downloading score: ${scoreState.value?.isError}")
+                }else{
+                    StoreScreen()
+                }
+            }
+            }
         }
         BottomNavigationBar(navController = navController)
     }
-}
+
 
 @Composable
 fun StoreScreen() {
@@ -92,7 +104,7 @@ fun StoreScreen() {
         .fillMaxSize()
         .background(color = Color.White)
     ) {
-
+        var test  = ChartSession.mCustomer.toList()
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -255,59 +267,73 @@ fun BarChart(
 
 fun getChartData(chart: String): List<Float> {
     if(chart == "offer"){
-        return listOf(80f, 65f, 90f, 75f, 30f)
+        return ChartSession.mOffer
     }else if(chart == "customer"){
-        return listOf(180f, 165f, 190f, 175f, 130f)
+        return ChartSession.mCustomer
     }else if(chart == "score"){
-        return listOf(8000f, 6500f, 9000f, 7500f, 3000f)
+        return ChartSession.mScore
     }else
         return listOf(0f,0f,0f,0f,0f)
 }
 fun getChartMax(chart: String): Float {
     if(chart == "offer"){
-        return 100f
+        return convertChartMax(ChartSession.mOffer.max())
     }else if(chart == "customer"){
-        return 200f
+        return convertChartMax(ChartSession.mCustomer.max())
     }else if(chart == "score"){
-        return 10000f
+        return convertChartMax(ChartSession.mScore.max())
     }else
         return 0f
 }
 
-fun getyLabels(chart: String): List<Float> {
-    if(chart == "offer"){
-        return listOf(0f, 25f, 50f, 75f, 100f)
-    }else if(chart == "customer"){
-        return listOf(0f, 50f, 100f, 150f, 200f)
-    }else if(chart == "score"){
-        return listOf(0f, 2500f, 5000f, 7500f, 10000f)
-    }else
-        return listOf(0f,0f,0f,0f,0f)
-}
-
-
-
-@Composable
-fun ScoreCircle(score: Int) {
-    androidx.compose.material.Surface(
-        modifier = Modifier
-            .size(200.dp)
-            .clip(CircleShape)
-            .background(Color.Blue)
-            .border(width = 2.dp, color = Color.Black, shape = CircleShape),
-        color = Color.White,
-        elevation = 4.dp
-    ) {
-        Box(contentAlignment = Alignment.Center) {
-            androidx.compose.material.Text(
-                text = score.toString(),
-                fontSize = 48.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(16.dp)
-            )
-        }
+fun convertChartMax(value: Float): Float {
+    return when {
+        value <= 20 -> 20f
+        value <= 50 -> 50f
+        value <= 100 -> 100f
+        value <= 200 -> 200f
+        value <= 500 -> 500f
+        value <= 1000 -> 1000f
+        value <= 2000 -> 2000f
+        value <= 5000 -> 5000f
+        value <= 10000 -> 10000f
+        value <= 20000 -> 20000f
+        value <= 50000 -> 50000f
+        value <= 100000 -> 100000f
+        else -> throw IllegalArgumentException("Value out of range") // Optional: Fehlerbehandlung für Werte außerhalb des definierten Bereichs
     }
 }
+
+fun getyLabels(chart: String): List<Float> {
+    val number = getChartMax(chart)
+    val resultList = mutableListOf<Float>()
+    resultList.add(0f)
+    resultList.add(number * 0.25f)
+    resultList.add(number * 0.5f)
+    resultList.add(number * 0.75f)
+    resultList.add(number)
+    return resultList
+}
+
+fun numberConverter(number: Int): String {
+    val suffixes = listOf("", "K", "M", "B", "T") // Suffixe für 1000er-Schritte
+    var convertedNumber = number.toDouble()
+    var suffixIndex = 0
+
+    while (convertedNumber >= 1000 && suffixIndex < suffixes.size - 1) {
+        convertedNumber /= 1000
+        suffixIndex++
+    }
+
+    val formattedNumber = when {
+        convertedNumber >= 100 -> convertedNumber.toInt().toString() // Keine Dezimalstellen für Werte >= 100
+        convertedNumber < 100 && convertedNumber >= 10 -> Math.floor(convertedNumber * 10)/10 // Eine Dezimalstelle für Werte >= 100
+        else -> Math.floor(convertedNumber * 100)/100 // Zwei Dezimalstellen für Werte < 10
+    }
+
+    return "$formattedNumber${suffixes[suffixIndex]}"
+}
+
 
 @Composable
 fun ScoreLogo() {
@@ -318,8 +344,8 @@ fun ScoreLogo() {
             modifier = Modifier
         )
         Text(
-            text = "999",
-            fontSize = 70.sp,
+            text = numberConverter(ChartSession.totalScore),
+            fontSize = 69.sp,
             fontWeight = FontWeight.Bold,
             color = GreenDark
         )

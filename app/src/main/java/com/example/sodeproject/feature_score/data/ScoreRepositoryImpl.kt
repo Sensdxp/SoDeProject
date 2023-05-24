@@ -1,6 +1,10 @@
 package com.example.sodeproject.feature_score.data
 
+import androidx.compose.runtime.mutableStateListOf
 import com.example.sodeproject.feature_login.data.UserSession
+import com.example.sodeproject.feature_score.presentation.Stats
+import com.example.sodeproject.feature_shop.data.Shop
+import com.example.sodeproject.feature_shop.data.ShopSession
 import com.example.sodeproject.util.Resource
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -51,7 +55,7 @@ class ScoreRepositoryImpl @Inject constructor(
     override fun saveScore(userId: String, score: Int): Flow<Resource<Int>> {
         return flow {
             emit(Resource.Loading())
-
+            ChartSession.mCustomer = listOf(80f, 65f, 90f, 75f, 30f)
             val reference = FirebaseDatabase.getInstance("https://sodeproject-default-rtdb.europe-west1.firebasedatabase.app").getReference("users/$userId/score")
             reference.setValue(score).await()
 
@@ -61,28 +65,66 @@ class ScoreRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getChartData(userId: String): Flow<Resource<Int>> {
+    override fun getChartData(userId: String): Flow<Resource<Stats>> {
         return flow {
             emit(Resource.Loading())
+
             var finished: Boolean = false
 
-            val reference = FirebaseDatabase.getInstance("https://sodeproject-default-rtdb.europe-west1.firebasedatabase.app").getReference("users/$userId/stats")
+            val listmCustomer = mutableStateListOf<Float>()
+            val listmScore = mutableStateListOf<Float>()
+            val listmOffer = mutableStateListOf<Float>()
+
+            val reference = FirebaseDatabase.getInstance("https://sodeproject-default-rtdb.europe-west1.firebasedatabase.app").getReference("shops/$userId/stats")
 
             reference.addValueEventListener( object : ValueEventListener {
+
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     val totalScore = dataSnapshot.child("totalScore").getValue(Int::class.java) ?: 0
-                    val mCustomerData = dataSnapshot.child("mCustomer").children.mapNotNull { it.getValue(Float::class.java) }
-                    val mScoreData = dataSnapshot.child("mScore").children.mapNotNull { it.getValue(Float::class.java) }
-                    val mOfferData = dataSnapshot.child("mOffer").children.mapNotNull { it.getValue(Float::class.java) }
 
-                    ChartSession.mCustomer.clear()
-                    ChartSession.mCustomer.addAll(mCustomerData.takeLast(5))
+                    val mCustomerSnapshot = dataSnapshot.child("mCustomer")
+                    val mScoreSnapshot = dataSnapshot.child("mScore")
+                    val mOfferSnapshot = dataSnapshot.child("mOffer")
 
-                    ChartSession.mScore.clear()
-                    ChartSession.mScore.addAll(mScoreData.takeLast(5))
+                    listmCustomer.clear()
+                    listmScore.clear()
+                    listmOffer.clear()
 
-                    ChartSession.mOffer.clear()
-                    ChartSession.mOffer.addAll(mOfferData.takeLast(5))
+                    mCustomerSnapshot.children.forEach { childSnapshot ->
+                        val value = childSnapshot.getValue(Float::class.java)
+                        value?.let {
+                            listmCustomer.add(it)
+                        }
+                    }
+
+                    mScoreSnapshot.children.forEach { childSnapshot ->
+                        val value = childSnapshot.getValue(Float::class.java)
+                        value?.let {
+                            listmScore.add(it)
+                        }
+                    }
+
+                    mOfferSnapshot.children.forEach { childSnapshot ->
+                        val value = childSnapshot.getValue(Float::class.java)
+                        value?.let {
+                            listmOffer.add(it)
+                        }
+                    }
+
+                    ChartSession.mCustomer = emptyList()
+                    //ChartSession.mCustomer.clear()
+                    //ChartSession.mCustomer.addAll(listmCustomer)
+                    ChartSession.mCustomer = listmCustomer
+
+                    //ChartSession.mScore.clear()
+                    //ChartSession.mScore.addAll(listmScore)
+                    ChartSession.mScore = emptyList()
+                    ChartSession.mScore = listmScore
+
+                    //ChartSession.mOffer.clear()
+                    //ChartSession.mOffer.addAll(listmOffer)
+                    ChartSession.mOffer = emptyList()
+                    ChartSession.mOffer = listmOffer
 
                     ChartSession.totalScore = totalScore
 
@@ -96,11 +138,15 @@ class ScoreRepositoryImpl @Inject constructor(
             }
             )
 
-            while (!finished) {
+            while (finished == false) {
                 kotlinx.coroutines.delay(10)
             }
 
-            emit(Resource.Success(1))
+            emit(Resource.Success(Stats(
+                mCustomer = listOf(80f, 65f, 90f, 75f, 30f),
+                mScore = listOf(0f, 50f, 100f, 150f, 200f),
+                mOffer = listOf(0f, 2500f, 5000f, 7500f, 10000f),
+                totalScore = 10000)))
         }.catch {
             emit(Resource.Error(it.message.toString()))
         }

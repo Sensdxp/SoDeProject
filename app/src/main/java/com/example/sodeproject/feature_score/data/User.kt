@@ -8,8 +8,8 @@ data class User(
 )
 
 object ChartSession {
-    val mCustomer = mutableStateListOf<Float>()
-    val mScore = mutableStateListOf<Float>()
-    val mOffer = mutableStateListOf<Float>()
+    var mCustomer: List<Float> = listOf(0f,0f,0f,0f,0f)
+    var mScore: List<Float> = listOf(0f,0f,0f,0f,0f)
+    var mOffer: List<Float> = listOf(0f,0f,0f,0f,0f)
     var totalScore: Int = 0
 }

@@ -1,10 +1,13 @@
 package com.example.sodeproject.feature_score.presentation
 
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sodeproject.feature_login.data.UserSession
+import com.example.sodeproject.feature_score.data.ChartSession
 import com.example.sodeproject.feature_score.data.ScoreRepository
+import com.example.sodeproject.feature_shop.presentation.ShopState
 import com.example.sodeproject.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -17,13 +20,20 @@ import javax.inject.Inject
 @HiltViewModel
 class ScoreViewModel @Inject constructor(
     private val repository: ScoreRepository
-    ): ViewModel(){
+    ): ViewModel() {
 
     val _scoreState = Channel<ScoreState>()
     val scoreState = _scoreState.receiveAsFlow()
 
+    val _statsState = Channel<StatsState>()
+    val statsState = _statsState.receiveAsFlow()
+
     init {
-        UserSession.uid?.let { getScore(it) }
+        if(UserSession.seller == true){
+            UserSession.uid?.let { getChartData(it) }
+        }else{
+            UserSession.uid?.let { getScore(it) }
+        }
     }
 
     fun getScore(userId: String) = viewModelScope.launch {
@@ -32,9 +42,11 @@ class ScoreViewModel @Inject constructor(
                 is Resource.Success -> {
                     _scoreState.send(ScoreState(isSuccess = true))
                 }
+
                 is Resource.Loading -> {
                     _scoreState.send(ScoreState(isLoading = true))
                 }
+
                 is Resource.Error -> {
                     _scoreState.send(ScoreState(isError = true))
 
@@ -42,8 +54,53 @@ class ScoreViewModel @Inject constructor(
             }
         }
     }
-}
+
+    fun getChartData(userId: String) = viewModelScope.launch {
+            repository.getChartData(userId).collect { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        _scoreState.send(ScoreState(isSuccess = true))
+                    }
+
+                    is Resource.Loading -> {
+                        _scoreState.send(ScoreState(isLoading = true))
+                    }
+
+                    is Resource.Error -> {
+                        _scoreState.send(ScoreState(isError = true))
+
+                    }
+                }
+            }
+        }
+    }
+
 /*
+
+fun getChartData(userId: String) = viewModelScope.launch {
+            repository.getChartData(userId).collect { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        ChartSession.mCustomer = result.data?.mCustomer!!
+                        result.data?.let { StatsState(isSuccess = it) }
+                            ?.let { _statsState.send(it) }
+                    }
+
+                    is Resource.Loading -> {
+                        _statsState.send(StatsState(isLoading = true))
+                    }
+
+                    is Resource.Error -> {
+                        _statsState.send(StatsState(isError = true))
+
+                    }
+                }
+            }
+        }
+    }
+
+
+
 val _signInState = Channel<SignInState>()
     val signInState = _signInState.receiveAsFlow()
 
