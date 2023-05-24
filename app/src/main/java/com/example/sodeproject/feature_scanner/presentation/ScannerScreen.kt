@@ -13,6 +13,7 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
@@ -20,11 +21,15 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -52,9 +57,19 @@ import kotlinx.coroutines.launch
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Button
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.sodeproject.ui.theme.GreenDark
+import com.example.sodeproject.ui.theme.GreenLight
+import com.example.sodeproject.ui.theme.GreenSuperDark
 
 @Composable
 fun ScannerScreen(
@@ -107,7 +122,6 @@ fun ScannerScreen(
     }else{
         Box(
             modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
         ) {
             if(scannerState.value?.isLoading == true){
                 CircularProgressIndicator()
@@ -115,17 +129,56 @@ fun ScannerScreen(
                 if(scannerState.value?.isError == true){
                     Text(text = "Error downloading articles: ${scannerState.value?.isError}")
                 }else{
-                    Column {
-                        ShopArticleSession.articleList.forEach { item ->
-                            SelectableItem(item)
-                        }
-                        Button(
-                            onClick = {
-                                navController.navigate("QRScanner_Screen")
-                            },
-                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(top = 32.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Top,
                         ) {
-                            Text(text = "Confirm")
+                            Text(
+                                text = "Select products",
+                                fontSize = 40.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = GreenLight
+                            )
+                            Text(
+                                text = "Your products:",
+                                fontSize = 20.sp,
+                                modifier = Modifier.padding(top = 16.dp,bottom = 8.dp),
+                                color = GreenLight
+                            )
+
+                            ShopArticleSession.articleList.forEach { item ->
+                                SelectableItem(item)
+                            }
+                        }
+
+                        Column(
+                            modifier = Modifier.fillMaxSize().padding(bottom = 80.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Bottom,
+                        ) {
+                            Button(
+                                onClick = {
+                                    navController.navigate("QRScanner_Screen")
+                                },
+                                modifier = Modifier
+                                    .padding(top = 20.dp, start = 15.dp, end = 15.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    backgroundColor = GreenLight,
+                                    contentColor = androidx.compose.ui.graphics.Color.White
+                                ),
+                                shape = RoundedCornerShape(20.dp)
+                            ) {
+                                Text(
+                                    text = "Confirm",
+                                    fontSize = 20.sp,
+                                    color = androidx.compose.ui.graphics.Color.White
+                                )
+                            }
                         }
                     }
                 }
@@ -139,28 +192,64 @@ fun ScannerScreen(
 fun SelectableItem(shopArticle: ShopArticle) {
     var itemCount =  remember { mutableStateOf(0) }
 
-
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(text = shopArticle.description, modifier = Modifier.weight(1f))
-        IconButton(
-            onClick = {
-                itemCount.value--
-                // Subtract score points from the total volume
-                ShopArticleSession.addPoints = ShopArticleSession.addPoints - shopArticle.scorePoints
-                      },
-            enabled = itemCount.value > 0
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp, vertical = 8.dp)
+        .background(color = GreenLight, shape = RoundedCornerShape(10.dp))
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(horizontal = 30.dp, vertical = 10.dp)
+                .fillMaxWidth(),
         ) {
-            Icon(Icons.Filled.Email, contentDescription = "Minus")
-        }
-        Text(text = itemCount.value.toString())
-        IconButton(
-            onClick = {
-                itemCount.value++
-                // Add score points from the total volume
-                ShopArticleSession.addPoints = ShopArticleSession.addPoints + shopArticle.scorePoints
+            Text(text = shopArticle.description, modifier = Modifier.weight(1f), fontSize = 18.sp, color = androidx.compose.ui.graphics.Color.White)
+            Box(
+                modifier = Modifier
+                    .size(25.dp)
+                    .clip(CircleShape)
+                    .background(androidx.compose.ui.graphics.Color.White)
+            ) {
+                IconButton(
+                    onClick = {
+                        itemCount.value--
+                        // Subtract score points from the total volume
+                        ShopArticleSession.addPoints =
+                            ShopArticleSession.addPoints - shopArticle.scorePoints
+                    },
+                    enabled = itemCount.value > 0
+                ) {
+                    Icon(
+                        Icons.Default.KeyboardArrowDown,
+                        contentDescription = "Minus",
+                        tint = GreenDark
+                    )
+                }
             }
-        ) {
-            Icon(Icons.Filled.Add, contentDescription = "Plus")
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(text = itemCount.value.toString(), fontSize = 18.sp, color = androidx.compose.ui.graphics.Color.White, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.width(8.dp))
+            Box(
+                modifier = Modifier
+                    .size(25.dp)
+                    .clip(CircleShape)
+                    .background(androidx.compose.ui.graphics.Color.White)
+            ) {
+                IconButton(
+                    onClick = {
+                        itemCount.value++
+                        // Add score points from the total volume
+                        ShopArticleSession.addPoints =
+                            ShopArticleSession.addPoints + shopArticle.scorePoints
+                    }
+                ) {
+                    Icon(
+                        Icons.Filled.KeyboardArrowUp,
+                        contentDescription = "Plus",
+                        tint = GreenDark
+                    )
+                }
+            }
         }
     }
 }

@@ -58,6 +58,7 @@ import com.example.sodeproject.ui.theme.GrayLight
 import com.example.sodeproject.ui.theme.GreenDark
 import com.example.sodeproject.ui.theme.GreenLight
 import com.example.sodeproject.ui.theme.GreenMain
+import com.example.sodeproject.ui.theme.GreenSuperDark
 
 @Composable
 fun ShopScreen(
@@ -154,7 +155,7 @@ fun ShopItem(
             .padding(7.5.dp)
             .aspectRatio(1f)
             .clip(RoundedCornerShape(10.dp))
-            .background(GreenDark)
+            .background(GreenSuperDark)
     ) {
         val width = constraints.maxWidth
         val height = constraints.maxHeight
@@ -250,7 +251,7 @@ fun ShopItem(
                     }
                     .align(Alignment.BottomEnd)
                     .clip(RoundedCornerShape(10.dp))
-                    .background(GreenDark)
+                    .background(GreenSuperDark)
                     .padding(vertical = 6.dp, horizontal = 15.dp)
             )
         }
