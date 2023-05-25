@@ -126,7 +126,7 @@ fun StoreScreen() {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         androidx.compose.material.Text(
-                            text = "Hallo FixCoffee",
+                            text = "Hallo ${UserSession.userName}",
                             fontSize = 40.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.White,

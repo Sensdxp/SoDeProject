@@ -70,6 +70,7 @@ class ScoreRepositoryImpl @Inject constructor(
             emit(Resource.Loading())
 
             var finished: Boolean = false
+            var finished1: Boolean = false
 
             val listmCustomer = mutableStateListOf<Float>()
             val listmScore = mutableStateListOf<Float>()
@@ -138,7 +139,25 @@ class ScoreRepositoryImpl @Inject constructor(
             }
             )
 
-            while (finished == false) {
+            val reference1 = FirebaseDatabase.getInstance("https://sodeproject-default-rtdb.europe-west1.firebasedatabase.app").getReference("shops/$userId")
+
+            reference1.addValueEventListener( object : ValueEventListener {
+
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    val shopName = dataSnapshot.child("name").getValue(String::class.java) ?: ""
+                    UserSession.userName = shopName
+
+                    finished1 = true
+
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    println("Fehler beim Lesen des Scores: ${error.message}")
+                }
+            }
+            )
+
+            while (finished == false && finished1 == false) {
                 kotlinx.coroutines.delay(10)
             }
 
