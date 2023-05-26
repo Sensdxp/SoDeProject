@@ -88,7 +88,11 @@ fun QRScannerScreen(
                             ShopArticleSession.customerId = userIDString
                             navController.navigate("Offer_Screen")
                         }else{
-                            viewModel.updateScore(ShopArticleSession.addPoints,userIDString)
+                            UserSession.uid?.let {
+                                viewModel.updateScore(ShopArticleSession.addPoints,userIDString,
+                                    it
+                                )
+                            }
                             navController.navigate("Scanner_Screen")
                         }
                     }

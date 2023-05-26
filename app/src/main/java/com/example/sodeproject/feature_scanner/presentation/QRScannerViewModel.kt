@@ -18,8 +18,8 @@ class QRScannerViewModel @Inject constructor(
     var hasCameraPermission = mutableStateOf(false)
     val code = mutableStateOf("")
 
-    fun updateScore(addScore: Int, userId: String) = viewModelScope.launch {
-        repository.updateScore(addScore,userId).collect(){result ->
+    fun updateScore(addScore: Int, userId: String, shopId: String) = viewModelScope.launch {
+        repository.updateScore(addScore,userId,shopId).collect(){result ->
             when (result) {
                 is Resource.Success -> {
 

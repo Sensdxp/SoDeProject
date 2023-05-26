@@ -31,7 +31,6 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.center
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.LinearGradientShader
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.ShaderBrush
@@ -42,9 +41,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.example.sodeproject.feature_navigation.NavigationGraph
+import com.example.sodeproject.feature_shop.presentation.ActiveInfoShop
 import com.example.sodeproject.feature_shop.presentation.ActiveInfoShop.shop
 import com.example.sodeproject.feature_shop.presentation.base64ToImageBitmap
 import com.example.sodeproject.ui.theme.GrayLight
+import com.example.sodeproject.ui.theme.GreenMain
 import com.example.sodeproject.ui.theme.GreenSuperDark
 import com.example.sodeproject.ui.theme.GreenSuperLight
 
@@ -76,12 +77,12 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFE9E9E9))
+            .background(androidx.compose.ui.graphics.Color(0xFFE9E9E9))
             .drawBehind {
                 val path = Path()
                 val x = size.width
                 val y = size.height
-                val center = size.center * 6F / 8F
+                val center = size.center * 5F / 8F
                 path.apply {
                     moveTo(0f, 0f)
                     lineTo(x, 0f)
@@ -112,12 +113,12 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
                 .clip(RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp))
                 .drawBehind {
                     val path = Path()
-                    val x = size.width
-                    val y = size.height * 8F / 6F
+                    val x = size.center.x * 2
+                    val y = size.center.y * 11/4
                     val center = size.center * 6F / 8F
                     path.apply {
                         moveTo(x * 1 / 8, y * 5 / 16)
-                        lineTo(x * 1 / 8, y * 2 / 8)
+                        lineTo(x * 1 / 8, y * 3 / 16)
                         cubicTo(
                             x1 = x * 1 / 8,
                             y1 = y * 1 / 8,
@@ -133,7 +134,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
                             x2 = x * 7 / 8,
                             y2 = y * 1 / 8,
                             x3 = x * 7 / 8,
-                            y3 = y * 2 / 8
+                            y3 = y * 3 / 16
                         )
                         lineTo(x * 7 / 8, y * 10 / 32)
                         cubicTo(
@@ -155,7 +156,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
                         )
                     }
 
-                    drawPath(path = path, color = Color.White)
+                    drawPath(path = path, color = androidx.compose.ui.graphics.Color.White)
                 },
             contentAlignment = Alignment.Center
         ){
@@ -172,25 +173,40 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Row() {
-                    Text(text = "Aldi", color = GreenSuperDark, fontSize = 30.sp, fontWeight = FontWeight.Bold )
-                    Spacer(modifier = Modifier.width(32.dp))
                     androidx.compose.material3.Button(
                         onClick = { /* Implement logout logic here */ },
                         colors = androidx.compose.material3.ButtonDefaults.buttonColors(
                             containerColor = GreenSuperDark,
-                            contentColor = Color.White
+                            contentColor = androidx.compose.ui.graphics.Color.White
                         ),
                     ) {
-                        Text(text = "Open Offer")
+                        Text(text = "Open Offer", Modifier.padding(horizontal = 20.dp))
                     }
 
                 }
-
-
-
+                Spacer(modifier = Modifier.height(16.dp))
+                Column(
+                    modifier= Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(text = "Who is ${"Aldi"}?", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = GreenSuperDark)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(text = "ActiveInfoShop.shop.shopDescription", color = GreenMain)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(text = "Offer:", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = GreenSuperDark)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(text = "ActiveInfoShop.shop.offer", color = GreenMain)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(text = "Price: ${200} Points", color = GreenMain)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(text = "Products:", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = GreenSuperDark)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(text = "Schuhe:            20P", color = GreenMain)
+                }
             }
-
-
         }
     }
 }

@@ -55,7 +55,7 @@ class ScannerRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun updateScore(addScore: Int, userId: String): Flow<Resource<Int>> {
+    override fun updateScore(addScore: Int, userId: String, shopId: String): Flow<Resource<Int>> {
         return flow {
             emit(Resource.Loading())
 
@@ -78,14 +78,38 @@ class ScannerRepositoryImpl @Inject constructor(
                 kotlinx.coroutines.delay(10)
             }
             val updatedScore = score + addScore
-            /*
-            if(updatedScore < 0){
-                emit(Resource.Error("User dose not have enough points"))
-                return@flow
+            reference.setValue(updatedScore).await()
+
+            var totalScore = 0
+            var mCustomer = 0f
+            var mScore = 0f
+            var mOffer = 0f
+            var finished = false
+            val referenceShop = FirebaseDatabase.getInstance("https://sodeproject-default-rtdb.europe-west1.firebasedatabase.app").getReference("users/$shopId/stats")
+
+            referenceShop.addValueEventListener( object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    totalScore = dataSnapshot.child("totalScore").getValue(Int::class.java) ?: 0
+                    mCustomer = dataSnapshot.child("mCustomer/m1").getValue(Float::class.java) ?: 0f
+                    mScore = dataSnapshot.child("mScore/m1").getValue(Float::class.java) ?: 0f
+                    mOffer = dataSnapshot.child("mOffer/m1").getValue(Float::class.java) ?: 0f
+                    finished = true
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    println("Error reading scores: ${error.message}")
+                }
+            }
+            )
+            while (finished == false) {
+                kotlinx.coroutines.delay(10)
             }
 
-             */
-            reference.setValue(updatedScore).await()
+            val newtotalScore = totalScore + addScore
+            referenceShop.child("totalScore").setValue(newtotalScore).await()
+            referenceShop.child("mCustomer/m1").setValue(mCustomer + 1).await()
+            referenceShop.child("mScore/m1").setValue(mScore + 1).await()
+            referenceShop.child("mOffer/m1").setValue(mOffer +1).await()
 
             emit(Resource.Success(1))
         }.catch {

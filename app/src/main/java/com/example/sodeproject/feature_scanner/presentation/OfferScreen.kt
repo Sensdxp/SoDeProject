@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.sodeproject.feature_login.data.UserSession
 import com.example.sodeproject.feature_navigation.BottomNavigationBar
 import com.example.sodeproject.feature_scanner.data.ShopArticleSession
 
@@ -55,7 +56,11 @@ fun OfferScreen(
                     Button(
                         onClick = {
                             var addScore = ShopArticleSession.addPoints - ShopArticleSession.offerCost
-                            offerViewModel.updateScore(addScore, ShopArticleSession.customerId)
+                            UserSession.uid?.let {
+                                offerViewModel.updateScore(addScore, ShopArticleSession.customerId,
+                                    it
+                                )
+                            }
                             navController.navigate("Scanner_Screen")
                             ShopArticleSession.customerId = ""
                         },

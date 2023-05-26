@@ -47,6 +47,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -54,6 +55,7 @@ import com.example.sodeproject.R
 import com.example.sodeproject.feature_score.data.ChartSession
 import com.example.sodeproject.ui.theme.GreenDark
 import com.example.sodeproject.ui.theme.GreenLight
+import com.example.sodeproject.util.calculateSizeFactor
 import java.text.DecimalFormat
 
 
@@ -63,7 +65,8 @@ fun ScoreScreen(
     viewModel: ScoreViewModel = hiltViewModel()
     ) {
     val scoreState = viewModel.scoreState.collectAsState(initial = null)
-    val statsState = viewModel.statsState.collectAsState(initial = null)
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    val fac = calculateSizeFactor(screenWidth)
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -87,7 +90,7 @@ fun ScoreScreen(
                 if (scoreState.value?.isError == true) {
                     Text(text = "Error downloading score: ${scoreState.value?.isError}")
                 }else{
-                    StoreScreen()
+                    StoreScreen(fac)
                 }
             }
             }
@@ -97,7 +100,7 @@ fun ScoreScreen(
 
 
 @Composable
-fun StoreScreen() {
+fun StoreScreen(fac: Float) {
     val selectedChart = remember { mutableStateOf("customer") }
 
     Box(modifier = Modifier
@@ -127,7 +130,7 @@ fun StoreScreen() {
                     ) {
                         androidx.compose.material.Text(
                             text = "Hallo ${UserSession.userName}",
-                            fontSize = 40.sp,
+                            fontSize = 40.sp * fac,
                             fontWeight = FontWeight.Bold,
                             color = Color.White,
                         )
@@ -135,7 +138,7 @@ fun StoreScreen() {
                         // Total Score Text
                         androidx.compose.material.Text(
                             text = "Your total score:",
-                            fontSize = 32.sp,
+                            fontSize = 32.sp * fac,
                             fontWeight = FontWeight.Bold,
                             color = Color.White,
                         )
@@ -143,10 +146,10 @@ fun StoreScreen() {
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 // Score value inside a circle
-                ScoreLogo()
+                ScoreLogo(fac)
                 Spacer(modifier = Modifier.height(16.dp))
                 // Customer and Score fields
-                CustomerScoreFields(selectedChart)
+                CustomerScoreFields(selectedChart, fac)
                 // Bar Chart
 
                 Box(modifier = Modifier
@@ -160,9 +163,9 @@ fun StoreScreen() {
                         BarChart(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(200.dp),
+                                .height(200.dp  * fac),
                             selectedChart = selectedChart.value,
-
+                            fac = fac
                         )
                         Spacer(modifier = Modifier.height(32.dp))
                     }
@@ -176,13 +179,15 @@ fun StoreScreen() {
 @Composable
 fun BarChart(
     modifier: Modifier,
-    barWidth: Dp = 22.dp,
-    barSpacing: Dp = 10.dp,
     barColor: Color = Color.White,
     backgroundColor: Color = GreenLight,
     selectedChart: String,
-    labelSize: Dp = 16.dp
+    fac: Float
 ) {
+    val barWidth: Dp = 22.dp * fac
+    val barSpacing: Dp = 10.dp * fac
+    val labelSize: Dp = 16.dp * fac
+
     val data = getChartData(selectedChart)
     val maxValue = getChartMax(selectedChart)
     val yListLabels = getyLabels(selectedChart)
@@ -232,7 +237,7 @@ fun BarChart(
         // X-Achse Beschriftungen
         xLabels.forEachIndexed { index, label ->
             val x = startX + (xStep * index) + (barWidth.toPx() / 2)
-            val y = startY + 16.dp.toPx()
+            val y = startY + 16.dp.toPx() * fac
 
             drawContext.canvas.nativeCanvas.drawText(
                 label,
@@ -336,7 +341,7 @@ fun numberConverter(number: Int): String {
 
 
 @Composable
-fun ScoreLogo() {
+fun ScoreLogo(fac: Float) {
     Box(contentAlignment = Alignment.Center){
         Image(
             painter = painterResource(R.mipmap.img_1),
@@ -345,7 +350,7 @@ fun ScoreLogo() {
         )
         Text(
             text = numberConverter(ChartSession.totalScore),
-            fontSize = 69.sp,
+            fontSize = 69.sp * fac,
             fontWeight = FontWeight.Bold,
             color = GreenDark
         )
@@ -353,7 +358,7 @@ fun ScoreLogo() {
 }
 
 @Composable
-fun CustomerScoreFields(selectedChart: MutableState<String>) {
+fun CustomerScoreFields(selectedChart: MutableState<String>, fac: Float) {
 
     Row(
         modifier = Modifier
@@ -367,7 +372,8 @@ fun CustomerScoreFields(selectedChart: MutableState<String>) {
             selected = selectedChart.value == "customer",
             onClick = {
                 selectedChart.value = "customer"
-            }
+            },
+            fac = fac
         )
         Spacer(modifier = Modifier.weight(1F))
         // Score field
@@ -376,7 +382,8 @@ fun CustomerScoreFields(selectedChart: MutableState<String>) {
             selected = selectedChart.value == "score",
             onClick = {
                 selectedChart.value = "score"
-            }
+            },
+            fac = fac
         )
         Spacer(modifier = Modifier.weight(1F))
         // Offer field
@@ -385,7 +392,8 @@ fun CustomerScoreFields(selectedChart: MutableState<String>) {
             selected = selectedChart.value == "offer",
             onClick = {
                 selectedChart.value = "offer"
-            }
+            },
+            fac = fac
         )
     }
     ChartSesion.chart = selectedChart.value
@@ -395,7 +403,8 @@ fun CustomerScoreFields(selectedChart: MutableState<String>) {
 fun Field(
     text: String,
     selected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    fac: Float
 ) {
     val backgroundColor = if (selected) GreenLight else Color.Transparent
 
@@ -404,13 +413,13 @@ fun Field(
             .background(color = backgroundColor)
             .clickable(onClick = onClick)
             .padding(horizontal = 5.dp)
-            .width(90.dp)
-            .height(40.dp),
+            .width(90.dp * fac)
+            .height(40.dp * fac),
         contentAlignment = Alignment.Center
     ) {
         androidx.compose.material.Text(
             text = text,
-            fontSize = 18.sp,
+            fontSize = 18.sp * fac,
             fontWeight = FontWeight.Bold,
             color = if (selected) Color.White else Color.Black
         )

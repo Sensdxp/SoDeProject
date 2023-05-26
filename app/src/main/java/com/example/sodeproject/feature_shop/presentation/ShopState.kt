@@ -1,5 +1,6 @@
 package com.example.sodeproject.feature_shop.presentation
 
+import com.example.sodeproject.feature_scanner.data.ShopArticle
 import com.example.sodeproject.feature_shop.data.Shop
 
 data class ShopState (
@@ -10,4 +11,5 @@ data class ShopState (
 
 object ActiveInfoShop {
     var shop: Shop = Shop("", "", "", "", "", 0,"")
+    var articleList: List<ShopArticle> = emptyList()
 }

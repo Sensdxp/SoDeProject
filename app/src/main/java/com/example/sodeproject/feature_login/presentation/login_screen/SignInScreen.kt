@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Divider
@@ -128,8 +129,7 @@ fun SignInScreen (
                 painter = painterResource(R.mipmap.img),
                 contentDescription = "Logo",
                 modifier = Modifier
-                    .fillMaxWidth(0.75f)
-                    .scale(1f)
+                    .size(width = screenHeight*5/16, height = screenHeight*5/16)
             )
 
             Spacer(

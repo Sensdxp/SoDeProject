@@ -46,12 +46,14 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.sodeproject.R
+import com.example.sodeproject.feature_login.data.UserSession
 import com.example.sodeproject.feature_shop.data.Shop
 import com.example.sodeproject.feature_shop.data.ShopSession
 import com.example.sodeproject.ui.theme.GrayLight
@@ -59,19 +61,22 @@ import com.example.sodeproject.ui.theme.GreenDark
 import com.example.sodeproject.ui.theme.GreenLight
 import com.example.sodeproject.ui.theme.GreenMain
 import com.example.sodeproject.ui.theme.GreenSuperDark
+import com.example.sodeproject.util.calculateSizeFactor
 
 @Composable
 fun ShopScreen(
     navController: NavController,
     viewModel: ShopViewModel = hiltViewModel()) {
     val shopState = viewModel.shopState.collectAsState(initial = null)
-    Box(
+    BoxWithConstraints(
         modifier = Modifier.fillMaxSize()
     ){
+        val screenWidth = maxWidth
+        val fac = calculateSizeFactor(maxWidth)
         Column() {
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                fontSize = 26.sp,
+                fontSize = 26.sp * fac,
                 fontWeight = FontWeight.Bold,
                 text = "Challanges",
                 modifier = Modifier
@@ -80,13 +85,13 @@ fun ShopScreen(
             Spacer(modifier = Modifier.height(16.dp))
             Column {
                 for (i in 1..3) {
-                    ChallangeItem()
+                    ChallangeItem(fac)
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 modifier = Modifier.padding(horizontal = 7.5.dp),
-                fontSize = 23.sp,
+                fontSize = 23.sp * fac,
                 fontWeight = FontWeight.Bold,
                 text = "Shops"
             )
@@ -104,7 +109,7 @@ fun ShopScreen(
                         modifier = Modifier.fillMaxSize()
                     ){
                         items(ShopSession.shoplist.size){
-                            ShopItem(navController, shop = ShopSession.shoplist[it])
+                            ShopItem(navController, shop = ShopSession.shoplist[it], fac)
                         }
                     }
                 }
@@ -116,7 +121,7 @@ fun ShopScreen(
 }
 
 @Composable
-fun ChallangeItem(){
+fun ChallangeItem(fac: Float){
     Box(modifier = Modifier
         .fillMaxWidth()
         .padding(vertical = 4.5.dp, horizontal = 7.5.dp)
@@ -131,7 +136,7 @@ fun ChallangeItem(){
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Text(color = Color.White, text = "lower asdad dasdasd werrfa")
+                Text(color = Color.White, text = "lower asdad dasdasd werrfa", fontSize = 14.sp * fac)
                 Box(modifier = Modifier.padding(start = 8.dp)) {
                     Icon(
                         imageVector = Icons.Default.CheckCircle,
@@ -148,7 +153,8 @@ fun ChallangeItem(){
 @Composable
 fun ShopItem(
     navController: NavController,
-    shop: Shop
+    shop: Shop,
+    fac: Float
 ){
     BoxWithConstraints(
         modifier = Modifier
@@ -157,6 +163,7 @@ fun ShopItem(
             .clip(RoundedCornerShape(10.dp))
             .background(GreenSuperDark)
     ) {
+
         val width = constraints.maxWidth
         val height = constraints.maxHeight
 
@@ -216,33 +223,22 @@ fun ShopItem(
             Text(
                 text = shop.name,
                 fontSize =  if (shop.name.length > 14 || (!shop.name.contains(" ") && shop.name.length > 8)) {
-                                32.sp
+                                32.sp * fac
                             } else {
-                                42.sp
+                                42.sp * fac
                             },
                 color = Color.White,
                 style = MaterialTheme.typography.h2,
-                //lineHeight = 7.sp,
-                //modifier = Modifier.align(Alignment.TopStart)
             )
             Image(
                 bitmap = base64ToImageBitmap(imageBase64 = shop.logo),
                 contentDescription = "Bildbeschreibung",
-                modifier = Modifier.align(Alignment.BottomStart).size(25.dp, 25.dp)
+                modifier = Modifier.align(Alignment.BottomStart).size(width.dp * 1/16, height.dp * 1/16)
             )
-            /*
-            Icon(
-                imageVector = Icons.Default.Settings,
-                contentDescription = shop.shopDescription,
-                tint = Color.White,
-                modifier = Modifier.align(Alignment.BottomStart)
-            )
-
-             */
             Text(
                 text = "Info",
                 color = Color.White,
-                fontSize = 14.sp,
+                fontSize = 18.sp * fac,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
                     .clickable {

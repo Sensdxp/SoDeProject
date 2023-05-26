@@ -17,6 +17,8 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.unit.Dp
 
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -24,6 +26,7 @@ import com.example.sodeproject.feature_login.data.UserSession
 import com.example.sodeproject.feature_navigation.components.BottomNavItem
 import com.example.sodeproject.ui.theme.GrayLight
 import com.example.sodeproject.ui.theme.GreenMain
+import com.example.sodeproject.util.calculateSizeFactor
 
 @Composable
 fun BottomNavigationBarItem(
@@ -32,6 +35,9 @@ fun BottomNavigationBarItem(
     modifier: Modifier = Modifier,
     onItemClick: (BottomNavItem) -> Unit
 ) {
+    val screenWidth: Dp = LocalConfiguration.current.screenWidthDp.dp
+    val fac: Float = calculateSizeFactor(screenWidth)
+
     val backStackEntry = navController.currentBackStackEntryAsState()
     BottomNavigation(
         modifier = modifier,
@@ -66,7 +72,7 @@ fun BottomNavigationBarItem(
                             Text(
                                 text = item.name,
                                 textAlign = TextAlign.Center,
-                                fontSize = 10.sp
+                                fontSize = 10.sp * fac
                             )
                         }
                     }
