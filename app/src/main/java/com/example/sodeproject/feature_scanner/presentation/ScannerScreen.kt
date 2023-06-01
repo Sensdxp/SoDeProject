@@ -64,12 +64,14 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.sodeproject.ui.theme.GreenDark
 import com.example.sodeproject.ui.theme.GreenLight
 import com.example.sodeproject.ui.theme.GreenSuperDark
+import com.example.sodeproject.util.calculateHightFactor
 
 @Composable
 fun ScannerScreen(
@@ -79,44 +81,48 @@ fun ScannerScreen(
     val scannerState = scannerViewModel.scannerState.collectAsState(initial = null)
     // QR Code Generator
     if(UserSession.seller == false || UserSession.seller == null) {
-        Row (
-            modifier = Modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ){
-            AndroidView(
-                factory = { ctx ->
-                    ImageView(ctx).apply {
-                        val size = 512
-                        val hints = hashMapOf<EncodeHintType,Int>().also {
-                            it[EncodeHintType.MARGIN] = 1
-                        }
-                        val bits = QRCodeWriter().encode(
-                            UserSession.uid,
-                            BarcodeFormat.QR_CODE,
-                            size,
-                            size,
-                            hints,
-                        )
-                        val bitmap =
-                            Bitmap.createBitmap(size,size, Bitmap.Config.RGB_565).also {
-                                for(x in 0 until size){
-                                    for(y in 0 until size){
-                                        it.setPixel(
-                                            x,
-                                            y,
-                                            if (bits[x,y]) Color.BLACK else Color.WHITE
-                                        )
+        Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text = "- SMARTbuy -", fontWeight = FontWeight.Bold, fontSize = 30.sp, color = GreenLight)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AndroidView(
+                    factory = { ctx ->
+                        ImageView(ctx).apply {
+                            val size = 512
+                            val hints = hashMapOf<EncodeHintType, Int>().also {
+                                it[EncodeHintType.MARGIN] = 1
+                            }
+                            val bits = QRCodeWriter().encode(
+                                UserSession.uid,
+                                BarcodeFormat.QR_CODE,
+                                size,
+                                size,
+                                hints,
+                            )
+                            val bitmap =
+                                Bitmap.createBitmap(size, size, Bitmap.Config.RGB_565).also {
+                                    for (x in 0 until size) {
+                                        for (y in 0 until size) {
+                                            it.setPixel(
+                                                x,
+                                                y,
+                                                if (bits[x, y]) Color.BLACK else Color.WHITE
+                                            )
+                                        }
                                     }
                                 }
-                            }
-                        setImageBitmap(bitmap)
-                    }
-                }, modifier = Modifier
-                    .width(300.dp)
-                    .height(300.dp)
+                            setImageBitmap(bitmap)
+                        }
+                    }, modifier = Modifier
+                        .width(300.dp)
+                        .height(300.dp)
 
-            )
+                )
+            }
+            Text(text = UserSession.userName, fontWeight = FontWeight.Bold, fontSize = 24.sp, color = GreenLight)
         }
     // QR Code Scanner
     }else{
@@ -157,7 +163,9 @@ fun ScannerScreen(
                         }
 
                         Column(
-                            modifier = Modifier.fillMaxSize().padding(bottom = 80.dp),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(bottom = 80.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Bottom,
                         ) {

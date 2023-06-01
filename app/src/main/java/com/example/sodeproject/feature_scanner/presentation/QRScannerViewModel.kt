@@ -34,6 +34,22 @@ class QRScannerViewModel @Inject constructor(
         }
     }
 
+    fun checkChallenges(addScore: Int, userId: String, shopId: String) = viewModelScope.launch {
+        repository.checkChallenges(userId,addScore,shopId).collect(){result ->
+            when (result) {
+                is Resource.Success -> {
+
+                }
+                is Resource.Loading -> {
+
+                }
+                is Resource.Error -> {
+
+                }
+            }
+        }
+    }
+
     /*
     getArticles(userId: String) = viewModelScope.launch {
         repository.getArticles(userId).collect(){result ->

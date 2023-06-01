@@ -27,3 +27,4 @@ fun calculateHightFactor(height: Dp): Float {
 
     return scaleFactor.toFloat()
 }
+

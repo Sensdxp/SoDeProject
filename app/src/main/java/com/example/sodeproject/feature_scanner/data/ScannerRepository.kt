@@ -8,6 +8,8 @@ interface ScannerRepository {
     fun updateScore(addScore: Int, userId: String, shopId: String):Flow<Resource<Int>>
     //fun getOffer(userId: String, offerId: String):Flow<Resource<Int>>
     fun checkOfferScore(userId: String, addScore: Int,shopId: String,offerId: String):Flow<Resource<Int>>
+
+    fun checkChallenges(userId: String, addScore: Int,shopId: String):Flow<Resource<Int>>
 }
 /*
 interface ShopRepository {

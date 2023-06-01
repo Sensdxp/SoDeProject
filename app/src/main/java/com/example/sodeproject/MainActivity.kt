@@ -70,6 +70,10 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+
+
+
 }
 
 @Composable
@@ -218,5 +222,6 @@ fun GreetingPreview() {
         Greeting("Android")
     }
 }
+
 
 

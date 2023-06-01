@@ -93,6 +93,11 @@ fun QRScannerScreen(
                                     it
                                 )
                             }
+                            UserSession.uid?.let {
+                                viewModel.checkChallenges(ShopArticleSession.addPoints,userIDString,
+                                    it
+                                )
+                            }
                             navController.navigate("Scanner_Screen")
                         }
                     }
