@@ -1,7 +1,9 @@
 package com.example.sodeproject.feature_score.data
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import com.example.sodeproject.feature_login.data.UserSession
+import com.example.sodeproject.feature_scanner.data.Trans
 import com.example.sodeproject.feature_score.presentation.Stats
 import com.example.sodeproject.feature_shop.data.Shop
 import com.example.sodeproject.feature_shop.data.ShopSession
@@ -26,11 +28,15 @@ class ScoreRepositoryImpl @Inject constructor(
             emit(Resource.Loading())
 
             var score = -1
-            val reference = FirebaseDatabase.getInstance("https://sodeproject-default-rtdb.europe-west1.firebasedatabase.app").getReference("users/$userId/userScore")
+            var name = ""
+            var trans = ""
+            val reference = FirebaseDatabase.getInstance("https://sodeproject-default-rtdb.europe-west1.firebasedatabase.app").getReference("users/$userId")
 
             reference.addValueEventListener( object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    score = dataSnapshot.getValue(Int::class.java)!!
+                    trans = dataSnapshot.child("trans").getValue(String::class.java) ?: ""
+                    name = dataSnapshot.child("userName").getValue(String::class.java) ?: ""
+                    score = dataSnapshot.child("userScore").getValue(Int::class.java) ?: 0
 
                 }
 
@@ -43,8 +49,11 @@ class ScoreRepositoryImpl @Inject constructor(
             while (score == -1) {
                 kotlinx.coroutines.delay(10)
             }
-
+            Log.d("HEY",trans)
+            UserSession.trans = parseInputString(trans)
+            UserSession.userName = name
             UserSession.score = score
+
 
             emit(Resource.Success(score))
         }.catch {
@@ -170,4 +179,25 @@ class ScoreRepositoryImpl @Inject constructor(
             emit(Resource.Error(it.message.toString()))
         }
     }
+}
+
+fun parseInputString(input: String): List<Trans> {
+    val transList = mutableListOf<Trans>()
+
+    val transStrings = input.split("*")
+    for (transString in transStrings) {
+        val transValues = transString.split("|")
+        if (transValues.size == 3) {
+            val datum = transValues[0]
+            val punkte = transValues[1].toIntOrNull()
+            val shop = transValues[2]
+
+            if (punkte != null) {
+                val trans = Trans(datum, punkte, shop)
+                transList.add(trans)
+            }
+        }
+    }
+
+    return transList
 }

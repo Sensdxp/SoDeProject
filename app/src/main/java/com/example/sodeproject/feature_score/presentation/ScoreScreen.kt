@@ -34,27 +34,43 @@ import android.graphics.Paint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.geometry.center
+import androidx.compose.ui.graphics.LinearGradientShader
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import com.example.sodeproject.R
+import com.example.sodeproject.feature_scanner.data.Trans
 import com.example.sodeproject.feature_score.data.ChartSession
+import com.example.sodeproject.feature_shop.presentation.QRCode
+import com.example.sodeproject.feature_shop.presentation.QRCodeDialog
 import com.example.sodeproject.ui.theme.GreenDark
 import com.example.sodeproject.ui.theme.GreenLight
+import com.example.sodeproject.ui.theme.GreenSuperDark
+import com.example.sodeproject.ui.theme.GreenSuperLight
 import com.example.sodeproject.util.calculateSizeFactor
 import java.text.DecimalFormat
 
@@ -72,13 +88,14 @@ fun ScoreScreen(
         contentAlignment = Alignment.Center
     ){
         if(UserSession.seller == false || UserSession.seller == null) {
-            Column() {
+            Column(Modifier.fillMaxSize()) {
                 if (scoreState.value?.isLoading == true) {
                     CircularProgressIndicator()
                 } else {
                     if (scoreState.value?.isError == true) {
                         Text(text = "Error downloading score: ${scoreState.value?.isError}")
                     }else{
+                        UserScreen(fac)
                         Text(text = "Your score is: ${UserSession.score}")
                     }
                 }
@@ -146,7 +163,7 @@ fun StoreScreen(fac: Float) {
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 // Score value inside a circle
-                ScoreLogo(fac)
+                ScoreLogo(fac,ChartSession.totalScore)
                 Spacer(modifier = Modifier.height(16.dp))
                 // Customer and Score fields
                 CustomerScoreFields(selectedChart, fac)
@@ -163,7 +180,7 @@ fun StoreScreen(fac: Float) {
                         BarChart(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(200.dp  * fac),
+                                .height(200.dp * fac),
                             selectedChart = selectedChart.value,
                             fac = fac
                         )
@@ -341,7 +358,7 @@ fun numberConverter(number: Int): String {
 
 
 @Composable
-fun ScoreLogo(fac: Float) {
+fun ScoreLogo(fac: Float,number: Int) {
     Box(contentAlignment = Alignment.Center){
         Image(
             painter = painterResource(R.mipmap.img_1),
@@ -349,7 +366,7 @@ fun ScoreLogo(fac: Float) {
             modifier = Modifier
         )
         Text(
-            text = numberConverter(ChartSession.totalScore),
+            text = numberConverter(number),
             fontSize = 69.sp * fac,
             fontWeight = FontWeight.Bold,
             color = GreenDark
@@ -428,4 +445,122 @@ fun Field(
 
 object ChartSesion{
     var chart: String = "customer"
+}
+@Composable
+fun UserScreen(fac: Float){
+    val showDialog = remember { mutableStateOf(false) }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(GreenLight)
+            .drawBehind {
+                val path = Path()
+                val x = size.center.x
+                val y = size.center.y + 200
+                val center = size.center * 5F / 8F
+                path.apply {
+                    moveTo(0f, 0f)
+                    lineTo(x * 2, 0f)
+                    lineTo(x * 2, y + 100 * fac)
+                    cubicTo(
+                        x1 = x * 2,
+                        y1 = y - 50 * fac,
+                        x2 = x * 2 - 100 * fac,
+                        y2 = y - 50 * fac,
+                        x3 = x * 2 - 200 * fac,
+                        y3 = y - 50 * fac
+                    )
+                    lineTo(200f * fac, y - 50 * fac)
+                    cubicTo(
+                        x1 = 100f * fac,
+                        y1 = y - 50 * fac,
+                        x2 = 0f * fac,
+                        y2 = y - 50 * fac,
+                        x3 = 0f,
+                        y3 = y + 100 * fac
+                    )
+                }
+                drawPath(path = path, color = Color.White)
+            },
+        contentAlignment = Alignment.Center
+    ) {
+
+        Column(
+            Modifier
+                .fillMaxHeight()
+                .padding(top = 50.dp, bottom = 60.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            UserSession.score?.let { ScoreLogo(fac = fac, number = it) }
+            Spacer(modifier = Modifier.height(46.dp*fac))
+            Text(text = "Score from:",
+                fontSize = 28.sp * fac,
+                fontWeight = FontWeight.Bold,
+                color = Color.White)
+            Spacer(modifier = Modifier.height(8.dp*fac))
+            Text(text = UserSession.userName,
+                fontSize = 36.sp * fac,
+                fontWeight = FontWeight.Bold,
+                color = Color.White)
+            Spacer(modifier = Modifier.height(16.dp*fac))
+            Button(
+                onClick = { showDialog.value = true },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.White,
+                    contentColor = GreenLight
+                )
+            ) {
+                Text("Latest interaction",
+                    fontSize = 25.sp * fac,
+                    fontWeight = FontWeight.Bold,
+                    color = GreenLight)
+            }
+            if (showDialog.value) {
+                InteractionDialog(onDismiss = { showDialog.value = false },fac)
+            }
+        }
+    }
+}
+
+@Composable
+fun InteractionDialog(onDismiss: () -> Unit,fac: Float) {
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        title = { Text("Latest interaction",color = GreenLight) },
+        text = {
+            Rechnung(fac)
+        }, // Hier wird der QR-Code-Composable eingefügt
+        confirmButton = {
+            Button(
+                onClick = { onDismiss() },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = GreenSuperDark,
+                    contentColor = Color.White
+                )
+            ) {
+                Text("OK")
+            }
+        }
+    )
+}
+
+@Composable
+fun Rechnung(fac: Float){
+    Box(modifier = Modifier.size(height = 250.dp*fac, width = 200.dp*fac)) {
+        val list: List<Trans> = UserSession.trans
+        LazyColumn() {
+            items(list) { item ->
+                Column(horizontalAlignment = Alignment.Start) {
+                    Row() {
+                        Text(text = item.datum, fontSize = 12.sp*fac, color = GreenLight)
+                        Spacer(modifier = Modifier.width(8.dp*fac))
+                        Text(text = item.punkte.toString(),modifier = Modifier.width(35.dp*fac), fontSize = 12.sp*fac, color = GreenLight)
+                        Spacer(modifier = Modifier.width(8.dp*fac))
+                        Text(text = item.shop, fontSize = 12.sp*fac, color = GreenLight)
+                    }
+                    Spacer(modifier = Modifier.height(8.dp*fac))
+                }
+            }
+        }
+    }
 }

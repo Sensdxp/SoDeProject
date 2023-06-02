@@ -108,7 +108,7 @@ class ShopRepositoryImpl @Inject constructor(
                 }
             }
             )
-            while (finished1 == false && finished2 == false && finished3 == false) {
+            while (finished1 == false || finished2 == false || finished3 == false) {
                 kotlinx.coroutines.delay(10)
             }
 

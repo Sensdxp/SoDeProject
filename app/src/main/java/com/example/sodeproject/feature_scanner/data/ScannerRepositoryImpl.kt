@@ -324,27 +324,6 @@ class ScannerRepositoryImpl @Inject constructor(
 
 data class Trans(val datum: String, val punkte: Int, val shop: String)
 
-fun parseInputString(input: String): List<Trans> {
-    val transList = mutableListOf<Trans>()
-
-    val transStrings = input.split("*")
-    for (transString in transStrings) {
-        val transValues = transString.split("|")
-        if (transValues.size == 3) {
-            val datum = transValues[0]
-            val punkte = transValues[1].toIntOrNull()
-            val shop = transValues[2]
-
-            if (punkte != null) {
-                val trans = Trans(datum, punkte, shop)
-                transList.add(trans)
-            }
-        }
-    }
-
-    return transList
-}
-
 fun appendToInputString(input: String, newTrans: Trans): String {
     val transString = "${newTrans.datum}|${newTrans.punkte}|${newTrans.shop}"
     val appendedString = if (input.isNotEmpty()) "$transString*$input" else transString
