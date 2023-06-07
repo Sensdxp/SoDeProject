@@ -45,8 +45,10 @@ class AuthRepositoryImpl @Inject constructor(
             val user = User(uid, 0, false)
             val reference = FirebaseDatabase.getInstance("https://sodeproject-default-rtdb.europe-west1.firebasedatabase.app").getReference("users/$uid")
             reference.setValue(user).await()
-            val referenceUsername = FirebaseDatabase.getInstance("https://sodeproject-default-rtdb.europe-west1.firebasedatabase.app").getReference("users/$userName")
+            val referenceUsername = FirebaseDatabase.getInstance("https://sodeproject-default-rtdb.europe-west1.firebasedatabase.app").getReference("users/$uid/userName")
             referenceUsername.setValue(userName).await()
+            val referenceMail = FirebaseDatabase.getInstance("https://sodeproject-default-rtdb.europe-west1.firebasedatabase.app").getReference("users/$uid/userMail")
+            referenceMail.setValue(email).await()
 
             emit(Resource.Success(result))
         }.catch {

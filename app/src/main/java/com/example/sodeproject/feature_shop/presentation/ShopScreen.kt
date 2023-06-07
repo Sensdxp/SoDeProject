@@ -408,36 +408,53 @@ fun ShopShop(wfac: Float, hfac: Float){
                     horizontalAlignment = Alignment.Start
                 ) {
                     item {
-                        Text(
-                            text = "Your Offer:",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 25.sp * wfac,
-                            color = GreenSuperDark
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = ActiveInfoShop.shop.offer,
-                            color = GreenMain,
-                            fontSize = 17.sp * wfac
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "Price: ${ActiveInfoShop.shop.offerCost} Points",
-                            color = GreenMain,
-                            fontSize = 17.sp * wfac
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = "Your Products:",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 25.sp * wfac,
-                            color = GreenSuperDark
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        ActiveInfoShop.articleList.forEach { item ->
-                            ArticleItem1(item, wfac)
-                            Spacer(modifier = Modifier.height(8.dp))
+                        Box(
+                            modifier = Modifier.fillMaxWidth()
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(Color.White)
+                        ) {
+                            Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)) {
+                                Text(
+                                    text = "Your Offer:",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 25.sp * wfac,
+                                    color = GreenSuperDark
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = ActiveInfoShop.shop.offer,
+                                    color = GreenMain,
+                                    fontSize = 17.sp * wfac
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = "Price: ${ActiveInfoShop.shop.offerCost} Points",
+                                    color = GreenMain,
+                                    fontSize = 17.sp * wfac
+                                )
+                            }
                         }
+                        Box(
+                            modifier = Modifier.fillMaxWidth()
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(Color.White)
+                        ) {
+                            Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)) {
+                                Text(
+                                    text = "Your Products:",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 25.sp * wfac,
+                                    color = GreenSuperDark
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                ActiveInfoShop.articleList.forEach { item ->
+                                    ArticleItem1(item, wfac)
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                }
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+
                     }
                 }
             }

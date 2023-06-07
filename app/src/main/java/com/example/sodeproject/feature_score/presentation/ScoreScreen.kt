@@ -146,7 +146,7 @@ fun StoreScreen(fac: Float) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         androidx.compose.material.Text(
-                            text = "Hallo ${UserSession.userName}",
+                            text = "Hello ${UserSession.userName}",
                             fontSize = 40.sp * fac,
                             fontWeight = FontWeight.Bold,
                             color = Color.White,
@@ -212,7 +212,7 @@ fun BarChart(
     val maxDataValue = data.maxOrNull() ?: 0f
     val labelColor = Color.White
 
-    val xLabels = listOf("Jan", "Feb", "Mar", "Apr", "May")
+    val xLabels = listOf("Feb", "Mar", "Apr", "May","Jun")
     val yLabels = yListLabels
 
     Canvas(modifier = modifier) {
@@ -310,6 +310,7 @@ fun getChartMax(chart: String): Float {
 
 fun convertChartMax(value: Float): Float {
     return when {
+        value <= 10 -> 10f
         value <= 20 -> 20f
         value <= 50 -> 50f
         value <= 100 -> 100f
@@ -395,7 +396,7 @@ fun CustomerScoreFields(selectedChart: MutableState<String>, fac: Float) {
         Spacer(modifier = Modifier.weight(1F))
         // Score field
         Field(
-            text = "Score",
+            text = "Score/\nCustomer",
             selected = selectedChart.value == "score",
             onClick = {
                 selectedChart.value = "score"
@@ -430,8 +431,8 @@ fun Field(
             .background(color = backgroundColor)
             .clickable(onClick = onClick)
             .padding(horizontal = 5.dp)
-            .width(90.dp * fac)
-            .height(40.dp * fac),
+            .width(95.dp * fac)
+            .height(50.dp * fac),
         contentAlignment = Alignment.Center
     ) {
         androidx.compose.material.Text(

@@ -24,7 +24,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.sodeproject.feature_login.data.UserSession
 import com.example.sodeproject.feature_navigation.BottomNavigationBar
+import com.example.sodeproject.ui.theme.GreenLight
 import com.example.sodeproject.ui.theme.GreenSuperLight
 
 @Composable
@@ -51,7 +53,7 @@ fun SettingsScreen(navController: NavController) {
                         y3 = center.y
                     )
                 }
-                drawPath(path = path, color = GreenSuperLight)
+                drawPath(path = path, color = GreenLight)
             },
         contentAlignment = Alignment.Center
     ) {
@@ -79,21 +81,25 @@ fun SettingsScreen(navController: NavController) {
                 modifier = Modifier.padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.Top
             ) {
-                Text(text = "Username: JohnDoe",fontSize = 20.sp)
+                Text(text = "Username: ${UserSession.userName}",fontSize = 20.sp)
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text(text = "Email: johndoe@example.com",fontSize = 20.sp)
+                Text(text = "Email: ${UserSession.userMail}",fontSize = 20.sp)
             }
 
             Spacer(modifier = Modifier.height(32.dp))
 
             Button(
-                onClick = { /* Implement logout logic here */ },
+                onClick = {
+                    navController.navigate("SignIn_Screen")
+                    UserSession.userMail = ""
+                    UserSession.uid = ""
+                },
                 modifier =
                 Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = GreenSuperLight,
+                    containerColor = GreenLight,
                     contentColor = Color.White
                 ),
             ) {

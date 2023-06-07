@@ -11,4 +11,5 @@ object UserSession {
     var score: Int? = null
     var seller: Boolean? = null
     var trans: List<Trans> = emptyList()
+    var userMail: String= ""
 }

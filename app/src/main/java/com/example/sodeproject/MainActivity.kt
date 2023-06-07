@@ -46,6 +46,7 @@ import com.example.sodeproject.feature_shop.presentation.ActiveInfoShop
 import com.example.sodeproject.feature_shop.presentation.ActiveInfoShop.shop
 import com.example.sodeproject.feature_shop.presentation.base64ToImageBitmap
 import com.example.sodeproject.ui.theme.GrayLight
+import com.example.sodeproject.ui.theme.GreenLight
 import com.example.sodeproject.ui.theme.GreenMain
 import com.example.sodeproject.ui.theme.GreenSuperDark
 import com.example.sodeproject.ui.theme.GreenSuperLight
@@ -91,26 +92,17 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
                 path.apply {
                     moveTo(0f, 0f)
                     lineTo(x*2, 0f)
-                    lineTo(x*2, y + 100)
+                    lineTo(x*2, y - 1000f)
                     cubicTo(
-                        x1 = x*2,
-                        y1 = y - 50,
-                        x2 = x*2 - 100,
-                        y2 = y - 50,
-                        x3 = x*2 -200,
-                        y3 = y - 50
-                    )
-                    lineTo(200f, y - 50)
-                    cubicTo(
-                        x1 = 100f,
-                        y1 = y - 50,
-                        x2 = 0f,
-                        y2 = y - 50,
+                        x1 = x*2 - 300,
+                        y1 = y - 1000,
+                        x2 = x,
+                        y2 = y - 600,
                         x3 = 0f,
-                        y3 = y +100
+                        y3 = y - 600
                     )
                 }
-                drawPath(path = path, color = Color.White)
+                drawPath(path = path, color = GreenLight)
             },
         contentAlignment = Alignment.Center
     ) {

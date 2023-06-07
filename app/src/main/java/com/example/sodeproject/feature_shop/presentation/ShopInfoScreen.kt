@@ -216,48 +216,74 @@ fun ShopInfoItem(hfac: Float, wfac: Float){
                     ) {
                         item {
                             Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                text = "Who is ${ActiveInfoShop.shop.name}?",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 20.sp * wfac,
-                                color = GreenSuperDark
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = ActiveInfoShop.shop.shopDescription,
-                                color = GreenMain,
-                                fontSize = 12.sp * wfac
-                            )
+                            Box(
+                                modifier = Modifier.fillMaxWidth()
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(androidx.compose.ui.graphics.Color.White)
+                            ) {
+                                Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)) {
+                                    Text(
+                                        text = "Who is ${ActiveInfoShop.shop.name}?",
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 20.sp * wfac,
+                                        color = GreenSuperDark
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Text(
+                                        text = ActiveInfoShop.shop.shopDescription,
+                                        color = GreenMain,
+                                        fontSize = 12.sp * wfac
+                                    )
+                                }
+                            }
                             Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                text = "Offer:",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 20.sp * wfac,
-                                color = GreenSuperDark
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = ActiveInfoShop.shop.offer,
-                                color = GreenMain,
-                                fontSize = 12.sp * wfac
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = "Price: ${ActiveInfoShop.shop.offerCost} Points",
-                                color = GreenMain,
-                                fontSize = 12.sp * wfac
-                            )
+
+                            Box(
+                                modifier = Modifier.fillMaxWidth()
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(androidx.compose.ui.graphics.Color.White)
+                            ) {
+                                Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)) {
+                                    Text(
+                                        text = "Offers they have:",
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 20.sp * wfac,
+                                        color = GreenSuperDark
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Text(
+                                        text = ActiveInfoShop.shop.offer,
+                                        color = GreenMain,
+                                        fontSize = 12.sp * wfac
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Text(
+                                        text = "Price: ${ActiveInfoShop.shop.offerCost} Points",
+                                        color = GreenMain,
+                                        fontSize = 12.sp * wfac
+                                    )
+                                }
+                            }
                             Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                text = "Products:",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 20.sp * wfac,
-                                color = GreenSuperDark
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            ActiveInfoShop.articleList.forEach { item ->
-                                ArticleItem(item,wfac)
-                                Spacer(modifier = Modifier.height(8.dp))
+
+                            Box(
+                                modifier = Modifier.fillMaxWidth()
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(androidx.compose.ui.graphics.Color.White)
+                            ) {
+                                Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)) {
+                                    Text(
+                                        text = "For what do you get points:",
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 20.sp * wfac,
+                                        color = GreenSuperDark
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    ActiveInfoShop.articleList.forEach { item ->
+                                        ArticleItem(item,wfac)
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                    }
+                                }
                             }
                         }
                     }

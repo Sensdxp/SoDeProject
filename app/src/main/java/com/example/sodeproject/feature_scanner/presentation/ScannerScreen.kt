@@ -64,6 +64,8 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.center
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
@@ -72,7 +74,7 @@ import com.example.sodeproject.ui.theme.GreenDark
 import com.example.sodeproject.ui.theme.GreenLight
 import com.example.sodeproject.ui.theme.GreenSuperDark
 import com.example.sodeproject.util.calculateHightFactor
-
+import androidx.compose.ui.graphics.Path
 @Composable
 fun ScannerScreen(
     navController: NavController,
@@ -81,48 +83,106 @@ fun ScannerScreen(
     val scannerState = scannerViewModel.scannerState.collectAsState(initial = null)
     // QR Code Generator
     if(UserSession.seller == false || UserSession.seller == null) {
-        Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "- SMARTbuy -", fontWeight = FontWeight.Bold, fontSize = 30.sp, color = GreenLight)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                AndroidView(
-                    factory = { ctx ->
-                        ImageView(ctx).apply {
-                            val size = 512
-                            val hints = hashMapOf<EncodeHintType, Int>().also {
-                                it[EncodeHintType.MARGIN] = 1
-                            }
-                            val bits = QRCodeWriter().encode(
-                                UserSession.uid,
-                                BarcodeFormat.QR_CODE,
-                                size,
-                                size,
-                                hints,
-                            )
-                            val bitmap =
-                                Bitmap.createBitmap(size, size, Bitmap.Config.RGB_565).also {
-                                    for (x in 0 until size) {
-                                        for (y in 0 until size) {
-                                            it.setPixel(
-                                                x,
-                                                y,
-                                                if (bits[x, y]) Color.BLACK else Color.WHITE
-                                            )
-                                        }
-                                    }
-                                }
-                            setImageBitmap(bitmap)
-                        }
-                    }, modifier = Modifier
-                        .width(300.dp)
-                        .height(300.dp)
-
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(androidx.compose.ui.graphics.Color.White)
+                .drawBehind {
+                    val path = Path()
+                    val x = size.center.x
+                    val y = size.center.y
+                    val center = size.center * 5F / 8F
+                    path.apply {
+                        moveTo(0f, 0f)
+                        lineTo(x * 2, 0f)
+                        lineTo(x * 2, 100f)
+                        cubicTo(
+                            x1 = x * 2 - 300,
+                            y1 = 100f,
+                            x2 = x,
+                            y2 = y - 600,
+                            x3 = 0f,
+                            y3 = y - 600
+                        )
+                    }
+                    drawPath(path = path, color = GreenLight)
+                },
+        ) {
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .padding(top = 16.dp, start = 16.dp)) {
+                Text(
+                    text = "Your QR-Code!",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 30.sp,
+                    color = androidx.compose.ui.graphics.Color.White
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Buy smart",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 30.sp,
+                    color = androidx.compose.ui.graphics.Color.White,
                 )
             }
-            Text(text = UserSession.userName, fontWeight = FontWeight.Bold, fontSize = 24.sp, color = GreenLight)
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "- SMARTbuy -",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 30.sp,
+                    color = GreenLight
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    AndroidView(
+                        factory = { ctx ->
+                            ImageView(ctx).apply {
+                                val size = 512
+                                val hints = hashMapOf<EncodeHintType, Int>().also {
+                                    it[EncodeHintType.MARGIN] = 1
+                                }
+                                val bits = QRCodeWriter().encode(
+                                    UserSession.uid,
+                                    BarcodeFormat.QR_CODE,
+                                    size,
+                                    size,
+                                    hints,
+                                )
+                                val bitmap =
+                                    Bitmap.createBitmap(size, size, Bitmap.Config.RGB_565).also {
+                                        for (x in 0 until size) {
+                                            for (y in 0 until size) {
+                                                it.setPixel(
+                                                    x,
+                                                    y,
+                                                    if (bits[x, y]) Color.BLACK else Color.WHITE
+                                                )
+                                            }
+                                        }
+                                    }
+                                setImageBitmap(bitmap)
+                            }
+                        }, modifier = Modifier
+                            .width(300.dp)
+                            .height(300.dp)
+
+                    )
+                }
+                Text(
+                    text = UserSession.userName,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 24.sp,
+                    color = GreenLight
+                )
+            }
         }
     // QR Code Scanner
     }else{

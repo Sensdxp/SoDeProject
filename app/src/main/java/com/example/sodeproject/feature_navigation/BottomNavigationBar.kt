@@ -95,7 +95,7 @@ fun BottomNavigationBar(
                 icon = Icons.Default.ShoppingCart
             ),
             BottomNavItem(
-                name = if(UserSession.seller == true) {"Scanner"} else "Barcode",
+                name = if(UserSession.seller == true) {"Scanner"} else "QR-code",
                 route = "Scanner_Screen",
                 icon = Icons.Default.Check
             ),

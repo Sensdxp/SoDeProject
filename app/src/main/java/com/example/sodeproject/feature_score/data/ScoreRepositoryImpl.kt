@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 
 class ScoreRepositoryImpl @Inject constructor(
@@ -30,12 +31,14 @@ class ScoreRepositoryImpl @Inject constructor(
             var score = -1
             var name = ""
             var trans = ""
+            var userMail = ""
             val reference = FirebaseDatabase.getInstance("https://sodeproject-default-rtdb.europe-west1.firebasedatabase.app").getReference("users/$userId")
 
             reference.addValueEventListener( object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     trans = dataSnapshot.child("trans").getValue(String::class.java) ?: ""
                     name = dataSnapshot.child("userName").getValue(String::class.java) ?: ""
+                    userMail = dataSnapshot.child("userMail").getValue(String::class.java) ?: ""
                     score = dataSnapshot.child("userScore").getValue(Int::class.java) ?: 0
 
                 }
@@ -49,7 +52,8 @@ class ScoreRepositoryImpl @Inject constructor(
             while (score == -1) {
                 kotlinx.coroutines.delay(10)
             }
-            Log.d("HEY",trans)
+
+            UserSession.userMail = userMail
             UserSession.trans = parseInputString(trans)
             UserSession.userName = name
             UserSession.score = score
@@ -126,10 +130,14 @@ class ScoreRepositoryImpl @Inject constructor(
                     //ChartSession.mCustomer.addAll(listmCustomer)
                     ChartSession.mCustomer = listmCustomer
 
+                    val result = listmCustomer.zip(listmScore) { customer, score ->
+                        (score.toDouble() / customer).roundToInt().toFloat()
+                    }
+
                     //ChartSession.mScore.clear()
                     //ChartSession.mScore.addAll(listmScore)
                     ChartSession.mScore = emptyList()
-                    ChartSession.mScore = listmScore
+                    ChartSession.mScore = result
 
                     //ChartSession.mOffer.clear()
                     //ChartSession.mOffer.addAll(listmOffer)
@@ -148,12 +156,14 @@ class ScoreRepositoryImpl @Inject constructor(
             }
             )
 
+            var shopMail: String = ""
             val reference1 = FirebaseDatabase.getInstance("https://sodeproject-default-rtdb.europe-west1.firebasedatabase.app").getReference("shops/$userId")
 
             reference1.addValueEventListener( object : ValueEventListener {
 
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     val shopName = dataSnapshot.child("name").getValue(String::class.java) ?: ""
+                    shopMail = dataSnapshot.child("shopMail").getValue(String::class.java) ?: ""
                     UserSession.userName = shopName
 
                     finished1 = true
@@ -166,9 +176,10 @@ class ScoreRepositoryImpl @Inject constructor(
             }
             )
 
-            while (finished == false && finished1 == false) {
+            while (finished == false || finished1 == false) {
                 kotlinx.coroutines.delay(10)
             }
+            UserSession.userMail = shopMail
 
             emit(Resource.Success(Stats(
                 mCustomer = listOf(80f, 65f, 90f, 75f, 30f),
