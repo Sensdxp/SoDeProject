@@ -96,7 +96,6 @@ fun ScoreScreen(
                         Text(text = "Error downloading score: ${scoreState.value?.isError}")
                     }else{
                         UserScreen(fac)
-                        Text(text = "Your score is: ${UserSession.score}")
                     }
                 }
             }
@@ -489,18 +488,22 @@ fun UserScreen(fac: Float){
         Column(
             Modifier
                 .fillMaxHeight()
-                .padding(top = 50.dp, bottom = 60.dp),
+                .padding(top = 20.dp, bottom = 60.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Text(text = "Your total Score",
+                fontSize = 28.sp * fac,
+                fontWeight = FontWeight.Bold,
+                color = GreenLight)
             UserSession.score?.let { ScoreLogo(fac = fac, number = it) }
             Spacer(modifier = Modifier.height(46.dp*fac))
-            Text(text = "Score from:",
-                fontSize = 28.sp * fac,
+            Text(text = "Hi, ${UserSession.userName}!",
+                fontSize = 36.sp * fac,
                 fontWeight = FontWeight.Bold,
                 color = Color.White)
             Spacer(modifier = Modifier.height(8.dp*fac))
-            Text(text = UserSession.userName,
-                fontSize = 36.sp * fac,
+            Text(text = "Time to be resourceful!",
+                fontSize = 28.sp * fac,
                 fontWeight = FontWeight.Bold,
                 color = Color.White)
             Spacer(modifier = Modifier.height(16.dp*fac))
